@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessEngine", "ChessEngine\ChessEngine.csproj", "{C95F607D-7E56-4B5D-AE6F-7B308B4D0738}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGUI", "ChessGUI\ChessGUI.csproj", "{D4FABD20-9F6C-4E13-A5FB-6764EEDB1BFF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessEngineTesting", "ChessEngineTesting\ChessEngineTesting.csproj", "{142A0BA5-A2DD-41AF-8F87-123602547743}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C95F607D-7E56-4B5D-AE6F-7B308B4D0738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C95F607D-7E56-4B5D-AE6F-7B308B4D0738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C95F607D-7E56-4B5D-AE6F-7B308B4D0738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C95F607D-7E56-4B5D-AE6F-7B308B4D0738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4FABD20-9F6C-4E13-A5FB-6764EEDB1BFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4FABD20-9F6C-4E13-A5FB-6764EEDB1BFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4FABD20-9F6C-4E13-A5FB-6764EEDB1BFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4FABD20-9F6C-4E13-A5FB-6764EEDB1BFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142A0BA5-A2DD-41AF-8F87-123602547743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{142A0BA5-A2DD-41AF-8F87-123602547743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{142A0BA5-A2DD-41AF-8F87-123602547743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{142A0BA5-A2DD-41AF-8F87-123602547743}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
