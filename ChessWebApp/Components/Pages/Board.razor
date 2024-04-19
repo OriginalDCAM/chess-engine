@@ -1,0 +1,37 @@
+﻿@page "/Board"
+@inherits LayoutComponentBase
+
+<h1>Board</h1>
+<div class="chessboard" style="width: 640px; height: 640px; border: solid lightslategrey 0.8rem; display: flex; flex-flow: row wrap;">
+    @for (var row = 0; row < 8; row++)
+    {
+        for (var col = 0; col < 8; col++)
+        {
+            if (col % 2 == 0)
+            {
+                <div class="square" id="@(row)-@(col)" style="width: 12.5%; height: 12.5%; flex-basis: 12.5%; background-color: @(row % 2 == 0 ? "#C07F00" : "#4C3D3D")">
+                    <Piece PieceType="@(ChessBoard.GetPieceSymbolAtSquare(row * 8 + col))"/>
+                </div>
+            }
+            else
+            {
+                <div class="square" id="@(row)-@(col)" style="width: 12.5%; height: 12.5%; flex-basis: 12.5%; background-color: @(row % 2 == 0 ? "#4C3D3D" : "#C07F00")">
+                    <Piece PieceType="@(ChessBoard.GetPieceSymbolAtSquare(row * 8 + col))"/>
+                </div>
+            }
+        }
+    }
+</div>
+
+
+@code {
+    public ChessEngine.Board ChessBoard = new();
+
+    public ulong GenerateBoard()
+    {
+        var bitboard = ChessBoard.Bitboard[(int) ChessEngine.Board.Piece.WhitePawn];
+
+        return bitboard;
+    }
+
+}
