@@ -19,13 +19,12 @@ public class Board
         BlackKing
     }
 
-    public ulong[] PieceBB => _PieceBB;
-
-    private ulong[] _PieceBB = new ulong[12];
+    public ulong[] Bitboard { get; } = new ulong[12];
 
     public Board()
     {
         GenerateBoard();
+        PrintChessboard();
     }
 
     public void GenerateBoard()
@@ -36,28 +35,28 @@ public class Board
             var squareIndex = row * 8 + col;
             var pieceBit = 1UL << squareIndex;
 
-            if (row == 6) _PieceBB[(int) Piece.WhitePawn] |= pieceBit;
+            if (row == 6) Bitboard[(int) Piece.WhitePawn] |= pieceBit;
 
-            if (row == 1) _PieceBB[(int) Piece.BlackPawn] |= pieceBit;
+            if (row == 1) Bitboard[(int) Piece.BlackPawn] |= pieceBit;
         }
 
-        _PieceBB[(int) Piece.BlackKing] = 1UL << 4;
-        _PieceBB[(int) Piece.BlackQueen] = 1UL << 3;
-        _PieceBB[(int) Piece.BlackBishop] = 1UL << 2;
-        _PieceBB[(int) Piece.BlackBishop] |= 1UL << 5;
-        _PieceBB[(int) Piece.BlackKnight] = 1UL << 1;
-        _PieceBB[(int) Piece.BlackKnight] |= 1UL << 6;
-        _PieceBB[(int) Piece.BlackRook] = 1UL << 0;
-        _PieceBB[(int) Piece.BlackRook] |= 1UL << 7;
+        Bitboard[(int) Piece.BlackKing] = 1UL << 4;
+        Bitboard[(int) Piece.BlackQueen] = 1UL << 3;
+        Bitboard[(int) Piece.BlackBishop] = 1UL << 2;
+        Bitboard[(int) Piece.BlackBishop] |= 1UL << 5;
+        Bitboard[(int) Piece.BlackKnight] = 1UL << 9;
+        Bitboard[(int) Piece.BlackKnight] |= 1UL << 6;
+        Bitboard[(int) Piece.BlackRook] = 1UL << 0;
+        Bitboard[(int) Piece.BlackRook] |= 1UL << 7;
 
-        _PieceBB[(int) Piece.WhiteKing] = 1UL << 60;
-        _PieceBB[(int) Piece.WhiteQueen] = 1UL << 59;
-        _PieceBB[(int) Piece.WhiteBishop] = 1UL << 58;
-        _PieceBB[(int) Piece.WhiteBishop] |= 1UL << 61;
-        _PieceBB[(int) Piece.WhiteKnight] = 1UL << 57;
-        _PieceBB[(int) Piece.WhiteKnight] |= 1UL << 62;
-        _PieceBB[(int) Piece.WhiteRook] = 1UL << 56;
-        _PieceBB[(int) Piece.WhiteRook] |= 1UL << 63;
+        Bitboard[(int) Piece.WhiteKing] = 1UL << 60;
+        Bitboard[(int) Piece.WhiteQueen] = 1UL << 59;
+        Bitboard[(int) Piece.WhiteBishop] = 1UL << 58;
+        Bitboard[(int) Piece.WhiteBishop] |= 1UL << 61;
+        Bitboard[(int) Piece.WhiteKnight] = 1UL << 57;
+        Bitboard[(int) Piece.WhiteKnight] |= 1UL << 62;
+        Bitboard[(int) Piece.WhiteRook] = 1UL << 56;
+        Bitboard[(int) Piece.WhiteRook] |= 1UL << 63;
     }
 
     private string GetPieceSymbol(int pieceIndex)
@@ -80,11 +79,11 @@ public class Board
         }
     }
 
-    private char GetPieceSymbolAtSquare(int squareIndex)
+    public char GetPieceSymbolAtSquare(int squareIndex)
     {
-        for (var pieceIndex = 0; pieceIndex < _PieceBB.Length; pieceIndex++)
+        for (var pieceIndex = 0; pieceIndex < Bitboard.Length; pieceIndex++)
         {
-            var bitboard = _PieceBB[pieceIndex];
+            var bitboard = Bitboard[pieceIndex];
             var mask = 1UL << squareIndex;
             if ((bitboard & mask) != 0) return GetPieceSymbol(pieceIndex)[0];
         }
@@ -102,6 +101,7 @@ public class Board
                 var pieceSymbol = GetPieceSymbolAtSquare(squareIndex);
                 Console.Write(pieceSymbol + " ");
             }
+
             Console.WriteLine();
         }
     }
