@@ -19,44 +19,73 @@ public class Board
         BlackKing
     }
 
+    public List<string> FenList { get; private set; } = new();
+
     public ulong[] Bitboard { get; } = new ulong[12];
 
     public Board()
     {
-        GenerateBoard();
+        GenerateBoardWithFen("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
         PrintChessboard();
     }
 
-    public void GenerateBoard()
+    public void GenerateBoardWithFen(string fen)
     {
-        for (var row = 0; row < 8; row++)
-        for (var col = 0; col < 8; col++)
+        Console.WriteLine("Generating board with FEN: " + fen);
+        if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
+        
+        string[] fenParts = fen.Split(' ');
+        string[] ranks = fenParts[0].Split('/');
+
+        try
         {
-            var squareIndex = row * 8 + col;
-            var pieceBit = 1UL << squareIndex;
+            if (ranks.Length != 8) throw new ArgumentException("Invalid FEN: " + fen);
 
-            if (row == 6) Bitboard[(int) Piece.WhitePawn] |= pieceBit;
+            for (var rank = 0; rank < 8; rank++)
+            {
+                var file = 0;
+                foreach (var character in ranks[rank])
+                {
+                    if (char.IsDigit(character))
+                    {
+                        file += int.Parse(character.ToString());
+                        continue;
+                    }
 
-            if (row == 1) Bitboard[(int) Piece.BlackPawn] |= pieceBit;
+                    var pieceIndex = GetPieceIndex(character);
+                    var squareIndex = rank * 8 + file;
+                    var pieceBit = 1UL << squareIndex;
+                    Bitboard[pieceIndex] |= pieceBit;
+                    file++;
+                }
+            }
+
+            FenList.Add(fen);
         }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+    }
 
-        Bitboard[(int) Piece.BlackKing] = 1UL << 4;
-        Bitboard[(int) Piece.BlackQueen] = 1UL << 3;
-        Bitboard[(int) Piece.BlackBishop] = 1UL << 2;
-        Bitboard[(int) Piece.BlackBishop] |= 1UL << 5;
-        Bitboard[(int) Piece.BlackKnight] = 1UL << 9;
-        Bitboard[(int) Piece.BlackKnight] |= 1UL << 6;
-        Bitboard[(int) Piece.BlackRook] = 1UL << 0;
-        Bitboard[(int) Piece.BlackRook] |= 1UL << 7;
-
-        Bitboard[(int) Piece.WhiteKing] = 1UL << 60;
-        Bitboard[(int) Piece.WhiteQueen] = 1UL << 59;
-        Bitboard[(int) Piece.WhiteBishop] = 1UL << 58;
-        Bitboard[(int) Piece.WhiteBishop] |= 1UL << 61;
-        Bitboard[(int) Piece.WhiteKnight] = 1UL << 57;
-        Bitboard[(int) Piece.WhiteKnight] |= 1UL << 62;
-        Bitboard[(int) Piece.WhiteRook] = 1UL << 56;
-        Bitboard[(int) Piece.WhiteRook] |= 1UL << 63;
+    private int GetPieceIndex(char piece)
+    {
+        switch (piece)
+        {
+            case 'p': return (int) Piece.BlackPawn;
+            case 'n': return (int) Piece.BlackKnight;
+            case 'b': return (int) Piece.BlackBishop;
+            case 'r': return (int) Piece.BlackRook;
+            case 'q': return (int) Piece.BlackQueen;
+            case 'k': return (int) Piece.BlackKing;
+            case 'P': return (int) Piece.WhitePawn;
+            case 'N': return (int) Piece.WhiteKnight;
+            case 'B': return (int) Piece.WhiteBishop;
+            case 'R': return (int) Piece.WhiteRook;
+            case 'Q': return (int) Piece.WhiteQueen;
+            case 'K': return (int) Piece.WhiteKing;
+            default: return -1;
+        }
     }
 
     private string GetPieceSymbol(int pieceIndex)

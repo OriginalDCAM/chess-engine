@@ -1,8 +1,7 @@
-using ChessWebApp.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
-namespace ChessWebApp;
+namespace ChessWebUI;
 
 public class Program
 {

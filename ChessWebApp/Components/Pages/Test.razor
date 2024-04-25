@@ -1,0 +1,11 @@
+﻿@page "/test"
+
+<div>
+    <textarea @bind="Description" @bind:event="oninput" />
+</div>
+<div>
+    Count : @Description.Length
+</div>
+@code {
+          public string Description { get; set; } = string.Empty;
+}

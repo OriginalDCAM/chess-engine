@@ -1,4 +1,5 @@
 ﻿@page "/Board"
+@using ChessWebUI.Components.ChessPieces
 @inherits LayoutComponentBase
 
 <h1>Board</h1>
@@ -23,23 +24,26 @@
     }
 </div>
 <input @bind:event="oninput" @bind:get="inputFen" @bind:set="OnInput" />
-<p>Current FEN: @inputFen</p>
-
+<p>Current Test: @inputFen</p>
+@foreach(var fen in ChessBoard.FenList)
+{
+    <p>@fen</p>
+}
 <button @onclick="UpdateFen">Submit</button>
 
 
 @code {
     public ChessEngine.Board ChessBoard = new();
 
-    public string inputFen { get; set; }
+    public string? inputFen { get; set; }
     
-    private void OnInput(string value)
+    private void OnInput(string? value)
     {
         inputFen = value;
     }
 
     private void UpdateFen()
     {
-        ChessBoard.GenerateBoardWithFen("sssssssssssssssssssssss");
+        if (inputFen != null)  ChessBoard.GenerateBoardWithFen(inputFen);
     }
 }
