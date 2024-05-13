@@ -19,13 +19,14 @@ public class Board
         BlackKing
     }
 
-    public List<string> FenList { get; private set; } = new();
+    public HashSet<string> FenList { get; private set; } = new();
 
     public ulong[] Bitboard { get; } = new ulong[12];
 
     public Board()
     {
-        GenerateBoardWithFen("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2");
+        GenerateBoardWithFen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2");
+        GenerateBoardWithFen("8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50");
         PrintChessboard();
     }
 
@@ -33,7 +34,7 @@ public class Board
     {
         Console.WriteLine("Generating board with FEN: " + fen);
         if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
-        
+
         string[] fenParts = fen.Split(' ');
         string[] ranks = fenParts[0].Split('/');
 
@@ -66,6 +67,19 @@ public class Board
         {
             Console.WriteLine(e.Message);
         }
+    }
+
+    public bool Move(int fromSquare, int toSquare, ulong fromBitboard)
+    {
+        var fromMask = 1UL << fromSquare;
+        var toMask = 1UL << toSquare;
+
+        if ((fromBitboard & fromMask) == 0) return false;
+
+        var pieceIndex = Array.IndexOf(Bitboard, fromBitboard);
+        Bitboard[pieceIndex] &= ~fromMask;
+        Bitboard[pieceIndex] |= toMask;
+    return false;
     }
 
     private int GetPieceIndex(char piece)
