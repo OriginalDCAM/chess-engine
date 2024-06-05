@@ -1,9 +1,9 @@
-﻿<DynamicComponent Type="components[PieceType]" Parameters="@parameters" ></DynamicComponent>
+﻿<DynamicComponent Type="_components[PieceType]" Parameters="@_parameters" ></DynamicComponent>
 
 @code {
     [Parameter] public char PieceType { get; set; }
     
-    private readonly Dictionary<char, Type> components = new()
+    private readonly Dictionary<char, Type> _components = new()
     {
         ['p'] = typeof(Pawn),
         ['r'] = typeof(Rook),
@@ -20,15 +20,20 @@
         ['.'] = typeof(Empty)
     };
     
-    private IDictionary<string, object>? parameters;
+    private IDictionary<string, object>? _parameters;
 
     protected override void OnParametersSet()
     {
         
-        parameters = new Dictionary<string, object>()
+        _parameters = new Dictionary<string, object>()
         {
             { "IsWhite", !char.IsUpper(PieceType) }
         };
+    }
+
+    private void Callback(DragEventArgs obj)
+    {
+        Console.WriteLine("Dragged!");
     }
 
 }
