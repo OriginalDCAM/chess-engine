@@ -1,0 +1,88 @@
+﻿@using ChessEngine
+@using ChessWebUI.Components.ChessPieces
+
+<div class="chessboard" style="width: 640px; height: 640px; border: solid lightslategrey 0.8rem; display: flex; flex-flow: row wrap;">
+    @for (var row = 0; row < 8; row++)
+    {
+    for (var col = 0; col < 8; col++)
+    {
+    int currentSquare = row * 8 + col;
+    <div class="square"
+         @onclick="@(() => OnSquareClick(currentSquare))"
+         id="@(row)-@(col)"
+         style="width: 12.5%; height: 12.5%; flex-basis: 12.5%; background-color: @((row + col) % 2 == 0 ? "#C07F00" : "#4C3D3D")">
+        @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
+        {
+        <Piece PieceType="@(Board.GetPieceSymbolAtSquare(row * 8 + col))"/>
+        }
+    </div>
+    }
+    }
+</div>
+
+<div style=" display: flex; justify-content: space-evenly; border-top: 5px; width: 640px;">
+    <input style="width: 80%; margin-top: 5px; height: 2rem;" @bind:event="oninput" @bind:get="InputFen" @bind:set="OnInput"/>
+    <button style="width: 15%; height: 2rem; margin-top: 5px; background: #842029; border: 1px solid #b32121; border-radius: 10%; color: #ffffff;" @onclick="UpdateFen">Submit</button>
+</div>
+<table>
+    <thead>
+    <tr>
+        <th>Available FENs:</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var fen in Board.FenList)
+    {
+    <tr>
+        <td style="cursor: pointer; border: 1px solid #1a1e21;" @onclick="() => Board.GenerateBoardWithFen(fen)">@fen</td>
+
+    </tr>
+    }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public Board? Board { get; set; }
+
+
+private int _selectedSquare = -1; // Track selected square
+
+private string? InputFen { get; set; }
+
+private void OnInput(string? value)
+{
+InputFen = value;
+}
+
+private void OnSquareClick(int square)
+{
+if (_selectedSquare == -1) // No piece selected, select this one
+{
+if (Board.GetPieceSymbolAtSquare(square) != '.')
+{
+_selectedSquare = square;
+}
+}
+else // Piece already selected, move it
+{
+Move(_selectedSquare, square);
+_selectedSquare = -1; // Deselect after move
+}
+}
+
+private void Move(int from, int to)
+{
+foreach (var bitboard in Board.Bitboard)
+{
+Board.Move(from, to, bitboard);
+}
+}
+
+private void UpdateFen()
+{
+if (InputFen != null && Board.GenerateBoardWithFen(InputFen))
+{
+StateHasChanged();
+}
+}
+}
