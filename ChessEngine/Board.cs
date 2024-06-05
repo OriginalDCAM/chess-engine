@@ -30,7 +30,8 @@ public class Board
         PrintChessboard();
     }
 
-    public void GenerateBoardWithFen(string fen)
+                public bool GenerateBoardWithFen(string fen)
+    
     {
         Console.WriteLine("Generating board with FEN: " + fen);
         if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
@@ -62,10 +63,12 @@ public class Board
             }
 
             FenList.Add(fen);
+            return true;
         }
         catch (Exception e)
         {
             Console.WriteLine(e.Message);
+            return false;
         }
     }
 
