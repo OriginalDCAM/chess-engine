@@ -3,10 +3,12 @@
 @using ChessEngine
 @inherits LayoutComponentBase
 
-<h1>Chess Game</h1>
+<h1>Chess Games</h1>
 <Chessboard Board="_chessBoard" />
 
 
 @code {
-    private Board _chessBoard = new();
+    private readonly Board _chessBoard = new();
+    
+
 }
