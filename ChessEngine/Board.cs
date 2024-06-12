@@ -6,7 +6,7 @@ public class Board
 {
     public HashSet<string> FenList { get; } = new();
 
-    public Player CanMove { get; set; } = Player.White;
+    private Player CanMove { get; set; } = Player.White;
 
     public string LastAddedFen { get; set; }
 
@@ -26,6 +26,7 @@ public class Board
         string[] fenParts = fen.Split(' ');
         string[] ranks = fenParts[0].Split('/');
 
+        CanMove = DecideWhoStartsFirst(fenParts[1]);
 
         if (ranks.Length > 8)
         {
@@ -55,6 +56,11 @@ public class Board
         LastAddedFen = fen;
     }
 
+    private Player DecideWhoStartsFirst(string color)
+    {
+        return color == "w" ? Player.White : Player.Black;
+    }
+
     public bool Move(int fromSquare, int toSquare, ulong fromBitboard, Player colour)
     {
         if (colour != CanMove) return false;
@@ -66,16 +72,17 @@ public class Board
         var pieceIndex = Array.IndexOf(Bitboard, fromBitboard);
         Bitboard[pieceIndex] &= ~fromMask;
         Bitboard[pieceIndex] |= toMask;
-        CanMove = (Player.White == CanMove) ? Player.Black : Player.White;
+        
+        CanMove = Player.White == CanMove ? Player.Black : Player.White;
+        
         Console.WriteLine($"this player can now move: {CanMove}");
         return true;
     }
 
-    public List<Move> GenerateMoves()
+    public List<Move> GenerateLegalMoves()
     {
         var moves = new List<Move>();
-
-
+        
         return moves;
     }
 
