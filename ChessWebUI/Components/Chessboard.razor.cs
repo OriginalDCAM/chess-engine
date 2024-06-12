@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace ChessWebUI.Components;
 
-public partial class Chessboard
+public partial class Chessboard : ComponentBase
 {
     [Parameter] public required Board Board { get; set; }
     
@@ -27,8 +27,9 @@ public partial class Chessboard
 
     private void Move(int from, int to, Player colour)
     {
-        foreach (var bitboard in Board.Bitboard)
+        for (var PieceIndex = 0; PieceIndex < Board.Bitboard.Length; PieceIndex++)
         {
+            var bitboard = Board.Bitboard[PieceIndex];
             var hasMoved = Board.Move(from, to, bitboard, colour);
             if (hasMoved) break;
         }

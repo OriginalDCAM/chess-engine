@@ -9,7 +9,7 @@
             int currentSquare = row * 8 + col;
             <div class="square"
                  @onclick="@(() => OnSquareClick(currentSquare))"
-                 style="width: 12.5%; height: 12.5%; flex-basis: 12.5%; background-color: @((row + col) % 2 == 0 ? "#C07F00" : "#4C3D3D")">
+                 style="background-color: @((row + col) % 2 == 0 ? "#C07F00" : "#4C3D3D")">
                 @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
                 {
                     <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
