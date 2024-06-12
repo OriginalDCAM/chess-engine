@@ -8,7 +8,7 @@ public class Board
 
     private Player CanMove { get; set; } = Player.White;
 
-    public string LastAddedFen { get; set; }
+    public string? LastAddedFen { get; set; }
 
     public ulong[] Bitboard { get; } = new ulong[12];
 
@@ -25,9 +25,17 @@ public class Board
 
         string[] fenParts = fen.Split(' ');
         string[] ranks = fenParts[0].Split('/');
+        string startingColor = fenParts[1];
+        
+        PlacePiecesOnBoard(fen, ranks);
+        CanMove = DecideWhoStartsFirst(startingColor);
 
-        CanMove = DecideWhoStartsFirst(fenParts[1]);
+        FenList.Add(fen);
+        LastAddedFen = fen;
+    }
 
+    private void PlacePiecesOnBoard(string fen, string[] ranks)
+    {
         if (ranks.Length > 8)
         {
             throw new FormatException("Invalid FEN: " + fen);
@@ -51,9 +59,6 @@ public class Board
                 file++;
             }
         }
-
-        FenList.Add(fen);
-        LastAddedFen = fen;
     }
 
     private Player DecideWhoStartsFirst(string color)
@@ -61,17 +66,20 @@ public class Board
         return color == "w" ? Player.White : Player.Black;
     }
 
-    public bool Move(int fromSquare, int toSquare, ulong fromBitboard, Player colour)
+    public bool Move(int fromSquare, int toSquare, Player colour)
     {
         if (colour != CanMove) return false;
         var fromMask = 1UL << fromSquare;
         var toMask = 1UL << toSquare;
+        
+        var fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(fromSquare));
+        var toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(toSquare));
+        
 
-        if ((fromBitboard & fromMask) == 0) return false;
-
-        var pieceIndex = Array.IndexOf(Bitboard, fromBitboard);
-        Bitboard[pieceIndex] &= ~fromMask;
-        Bitboard[pieceIndex] |= toMask;
+        Bitboard[fromBb] &= ~fromMask;
+        Bitboard[fromBb] |= toMask;
+        
+        if (toBb != -1) Bitboard[toBb] ^= toMask;
         
         CanMove = Player.White == CanMove ? Player.Black : Player.White;
         
