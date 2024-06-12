@@ -4,37 +4,37 @@ public static class Piece
 {
     public enum PieceTypes
     {
-        WhitePawn,
-        WhiteKnight,
-        WhiteBishop,
-        WhiteRook,
-        WhiteQueen,
-        WhiteKing,
+        WhitePawn = 0,
+        WhiteKnight = 1,
+        WhiteBishop = 2,
+        WhiteRook = 3,
+        WhiteQueen = 4,
+        WhiteKing = 5,
 
-        BlackPawn,
-        BlackKnight,
-        BlackBishop,
-        BlackRook,
-        BlackQueen,
-        BlackKing
+        BlackPawn = 6,
+        BlackKnight = 7,
+        BlackBishop = 8,
+        BlackRook = 9,
+        BlackQueen = 10,
+        BlackKing = 11
     }
 
     public static int GetPieceIndex(char piece)
     {
         switch (piece)
         {
-            case 'p': return (int) PieceTypes.BlackPawn;
-            case 'n': return (int) PieceTypes.BlackKnight;
-            case 'b': return (int) PieceTypes.BlackBishop;
-            case 'r': return (int) PieceTypes.BlackRook;
-            case 'q': return (int) PieceTypes.BlackQueen;
-            case 'k': return (int) PieceTypes.BlackKing;
-            case 'P': return (int) PieceTypes.WhitePawn;
-            case 'N': return (int) PieceTypes.WhiteKnight;
-            case 'B': return (int) PieceTypes.WhiteBishop;
-            case 'R': return (int) PieceTypes.WhiteRook;
-            case 'Q': return (int) PieceTypes.WhiteQueen;
-            case 'K': return (int) PieceTypes.WhiteKing;
+            case 'P': return (int) PieceTypes.BlackPawn;
+            case 'N': return (int) PieceTypes.BlackKnight;
+            case 'B': return (int) PieceTypes.BlackBishop;
+            case 'R': return (int) PieceTypes.BlackRook;
+            case 'Q': return (int) PieceTypes.BlackQueen;
+            case 'K': return (int) PieceTypes.BlackKing;
+            case 'p': return (int) PieceTypes.WhitePawn;
+            case 'n': return (int) PieceTypes.WhiteKnight;
+            case 'b': return (int) PieceTypes.WhiteBishop;
+            case 'r': return (int) PieceTypes.WhiteRook;
+            case 'q': return (int) PieceTypes.WhiteQueen;
+            case 'k': return (int) PieceTypes.WhiteKing;
             default: return -1;
         }
     }
