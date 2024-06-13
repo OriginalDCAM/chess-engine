@@ -27,7 +27,7 @@
         
         _parameters = new Dictionary<string, object>()
         {
-            { "IsWhite", !char.IsUpper(PieceType) }
+            { "IsWhite", char.IsUpper(PieceType) }
         };
     }
 
