@@ -24,23 +24,24 @@ public class Board
         if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
 
         string[] fenParts = fen.Split(' ');
+        
         string[] ranks = fenParts[0].Split('/');
         string startingColor = fenParts[1];
         
-        PlacePiecesOnBoard(fen, ranks);
+        if (ranks.Length > 8)
+        {
+            throw new FormatException("Invalid FEN: " + fen);
+        }
+        
+        PlacePiecesOnBoard(ranks);
         CanMove = DecideWhoStartsFirst(startingColor);
 
         FenList.Add(fen);
         LastAddedFen = fen;
     }
 
-    private void PlacePiecesOnBoard(string fen, string[] ranks)
+    private void PlacePiecesOnBoard(string[] ranks)
     {
-        if (ranks.Length > 8)
-        {
-            throw new FormatException("Invalid FEN: " + fen);
-        }
-
         for (var rank = 0; rank < 8; rank++)
         {
             var file = 0;
@@ -66,20 +67,20 @@ public class Board
         return color == "w" ? Player.White : Player.Black;
     }
 
-    public bool Move(int fromSquare, int toSquare, Player colour)
+    public bool Move(int fromSquare, int toSquare, Player color)
     {
-        if (colour != CanMove) return false;
+        if (color != CanMove) return false;
         var fromMask = 1UL << fromSquare;
         var toMask = 1UL << toSquare;
         
-        var fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(fromSquare));
+        var fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(fromSquare)); 
         var toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(toSquare));
         
 
-        Bitboard[fromBb] &= ~fromMask;
-        Bitboard[fromBb] |= toMask;
+        Bitboard[fromBb] &= ~fromMask; // preform AND operation on the bitboard 
+        Bitboard[fromBb] |= toMask; // preforms OR operation on the bitboard
         
-        if (toBb != -1) Bitboard[toBb] ^= toMask;
+        if (toBb != -1) Bitboard[toBb] ^= toMask; // this checks if the piece index is not -1 because that's an invalid index in the bb array. 
         
         CanMove = Player.White == CanMove ? Player.Black : Player.White;
         
@@ -109,7 +110,7 @@ public class Board
     public Player GetColorAtSquare(int squareIndex)
     {
         char pieceSymbol = GetPieceSymbolAtSquare(squareIndex);
-        
-        return char.IsUpper(pieceSymbol) ? Player.Black : Player.White;
+
+        return char.IsUpper(pieceSymbol) ? Player.White : Player.Black;
     }
 }
