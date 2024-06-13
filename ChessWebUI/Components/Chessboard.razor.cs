@@ -18,20 +18,13 @@ public partial class Chessboard : ComponentBase
                 _selectedSquare = square;
             }
         }
+        else if (_selectedSquare == square) _selectedSquare = -1;
         else // Piece already selected, move it
         {
-            Move(_selectedSquare, square, Board.GetColorAtSquare(_selectedSquare));
+            var color = Board.GetColorAtSquare(_selectedSquare);
+            
+            Board.Move(_selectedSquare, square, color); // Make the move
             _selectedSquare = -1; // Deselect after move
-        }
-    }
-
-    private void Move(int from, int to, Player colour)
-    {
-        for (var PieceIndex = 0; PieceIndex < Board.Bitboard.Length; PieceIndex++)
-        {
-            var bitboard = Board.Bitboard[PieceIndex];
-            var hasMoved = Board.Move(from, to, bitboard, colour);
-            if (hasMoved) break;
         }
     }
 
