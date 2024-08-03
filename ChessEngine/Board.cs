@@ -1,17 +1,14 @@
-﻿using System.Diagnostics;
-
-namespace ChessEngine;
+﻿namespace ChessEngine;
 
 public class Board
 {
-    public HashSet<string> FenList { get; } = new();
+    public HashSet<string> FenList { get; } = [];
 
-    private Player CanMove { get; set; } = Player.White;
+    public Player CanMove { get; set; } = Player.White;
 
-    public string? LastAddedFen { get; set; }
+    public string? LastAddedFen { get; private set; }
 
-    public ulong[] Bitboard { get; } = new ulong[12];
-
+    private ulong[] Bitboard { get; } = new ulong[12];
 
     public Board()
     {
@@ -21,6 +18,7 @@ public class Board
 
     public void GenerateBoardWithFen(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2")
     {
+        Console.WriteLine($"trying to generate board with this fen: {fen}");
         if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
 
         string[] fenParts = fen.Split(' ');
@@ -28,13 +26,14 @@ public class Board
         string[] ranks = fenParts[0].Split('/');
         string startingColor = fenParts[1];
         
+        
         if (ranks.Length > 8)
         {
             throw new FormatException("Invalid FEN: " + fen);
         }
         
         PlacePiecesOnBoard(ranks);
-        CanMove = DecideWhoStartsFirst(startingColor);
+        CanMove = startingColor == "w" ? Player.White : Player.Black;
 
         FenList.Add(fen);
         LastAddedFen = fen;
@@ -45,7 +44,7 @@ public class Board
         for (var rank = 0; rank < 8; rank++)
         {
             var file = 0;
-            foreach (var character in ranks[rank])
+            foreach (char character in ranks[rank])
             {
                 if (char.IsDigit(character))
                 {
@@ -53,28 +52,29 @@ public class Board
                     continue;
                 }
 
-                var pieceIndex = Piece.GetPieceIndex(character);
-                var squareIndex = rank * 8 + file;
-                var pieceBit = 1UL << squareIndex;
+                int pieceIndex = Piece.GetPieceIndex(character);
+                int squareIndex = rank * 8 + file;
+                ulong pieceBit = 1UL << squareIndex;
                 Bitboard[pieceIndex] |= pieceBit;
                 file++;
             }
         }
     }
 
-    private Player DecideWhoStartsFirst(string color)
+    public bool Move(Move move, Player color)
     {
-        return color == "w" ? Player.White : Player.Black;
-    }
-
-    public bool Move(int fromSquare, int toSquare, Player color)
-    {
-        if (color != CanMove) return false;
-        var fromMask = 1UL << fromSquare;
-        var toMask = 1UL << toSquare;
+        Console.WriteLine($"{move.StartSquare} to {move.TargetSquare}");
+        var moveGen = new MoveGen();
+        var board = this;
+        List<Move> moves = moveGen.GenerateMoves(ref board, color);
+        if (!moves.Contains(move)) return false;
         
-        var fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(fromSquare)); 
-        var toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(toSquare));
+        
+        ulong fromMask = 1UL << move.StartSquare;
+        ulong toMask = 1UL << move.TargetSquare;
+        
+        int fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare)); 
+        int toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
         
 
         Bitboard[fromBb] &= ~fromMask; // preform AND operation on the bitboard 
@@ -88,19 +88,12 @@ public class Board
         return true;
     }
 
-    public List<Move> GenerateLegalMoves()
-    {
-        var moves = new List<Move>();
-        
-        return moves;
-    }
-
     public char GetPieceSymbolAtSquare(int squareIndex)
     {
         for (var pieceIndex = 0; pieceIndex < Bitboard.Length; pieceIndex++)
         {
-            var bitboard = Bitboard[pieceIndex];
-            var mask = 1UL << squareIndex;
+            ulong bitboard = Bitboard[pieceIndex];
+            ulong mask = 1UL << squareIndex;
             if ((bitboard & mask) != 0) return Piece.GetPieceSymbol(pieceIndex);
         }
 
