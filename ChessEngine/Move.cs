@@ -1,10 +1,7 @@
-﻿using ChessEngine;
+﻿namespace ChessEngine;
 
-public struct Move
+public struct Move(int startSquare, int targetSquare)
 {
-    public readonly int StartSquare;
-    public readonly int TargetSquare;
+    public readonly int StartSquare = startSquare;
+    public readonly int TargetSquare = targetSquare;
 }
-
-
-
