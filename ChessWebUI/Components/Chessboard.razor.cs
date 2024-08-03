@@ -22,8 +22,9 @@ public partial class Chessboard : ComponentBase
         else // Piece already selected, move it
         {
             var color = Board.GetColorAtSquare(_selectedSquare);
+            var move = new Move(_selectedSquare, square);
             
-            Board.Move(_selectedSquare, square, color); // Make the move
+            Board.Move(move, color); // Make the move
             _selectedSquare = -1; // Deselect after move
         }
     }

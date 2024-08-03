@@ -13,10 +13,6 @@ public partial class FenList : ComponentBase
     [Parameter] public required HashSet<string> ListOfFens { get; set; }
 
 
-    public required string InputFen { get; set; }
+    public string InputFen { get; set; }
 
-    private void OnInput(string value)
-    {
-        InputFen = value;
-    }
 }

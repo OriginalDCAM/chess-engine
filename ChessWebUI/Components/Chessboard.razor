@@ -1,22 +1,20 @@
 ﻿@using ChessWebUI.Components.ChessPieces
-@using ChessWebUI.Components.Addons
-
-<div class="chessboard" style="width: 640px; height: 640px; border: solid lightslategrey 0.8rem; display: flex; flex-flow: row wrap;">
-    @for (var row = 0; row < 8; row++)
-    {
-        for (var col = 0; col < 8; col++)
+<MudItem>
+    <div class="chessboard">
+        @for (var row = 0; row < 8; row++)
         {
-            int currentSquare = row * 8 + col;
-            <div class="square"
-                 @onclick="@(() => OnSquareClick(currentSquare))"
-                 style="background-color: @((row + col) % 2 == 0 ? "#C07F00" : "#4C3D3D")">
-                @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
-                {
-                    <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
-                }
-            </div>
+            for (var col = 0; col < 8; col++)
+            {
+                int currentSquare = row * 8 + col;
+                <div class="square"
+                     @onclick="@(() => OnSquareClick(currentSquare))"
+                     style="background-color: @((row + col) % 2 == 0 ? "#CD3F3E" : "#1C2938")">
+                    @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
+                    {
+                        <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
+                    }
+                </div>
+            }
         }
-    }
-</div>
-
-<FenList ListOfFens="Board.FenList"  AddFen="AddFenToBoard" LastAddedFen="@Board.LastAddedFen"></FenList>
+    </div>
+</MudItem>

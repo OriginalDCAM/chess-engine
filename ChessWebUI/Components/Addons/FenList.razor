@@ -1,28 +1,27 @@
-﻿@using ChessEngine
-<table>
-    <thead>
-    <tr>
-        <th>Available FENs:</th>
-    </tr>
-    </thead>
-    <tbody>
-    <div style=" display: flex; justify-content: space-evenly; border-top: 5px; width: 640px;">
-        <input style="width: 80%; margin-top: 5px; height: 2rem;" @bind:event="oninput" @bind:get="InputFen" @bind:set="OnInput"/>
-        <button style="width: 15%; height: 2rem; margin-top: 5px; background: #842029; border: 1px solid #b32121; border-radius: 10%; color: #ffffff;" @onclick="(() => { AddFen(InputFen.TrimStart()); })">Submit</button>
-    </div>
-    @foreach (var fen in ListOfFens)
-    {
-        <tr>
-            @if (fen == LastAddedFen)
-            {
-                <td style="background: #20c997; cursor: pointer; border: 1px solid #1a1e21;"><span>* @fen</span></td>
-            }
-            else
-            {
-                <td style="cursor: pointer; border: 1px solid #1a1e21;" @onclick="() => AddFen(fen)"><span>- @fen</span></td>
-            }
-
-        </tr>
-    }
-    </tbody>
-</table>
+﻿<MudGrid Class="w-100">
+    <MudItem xs="12" md="9" Style="display: flex; justify-content: center; align-items: center; gap: 1rem;">
+        <MudTextField Style="height: 2.4rem;" Class="mud-width-full" Margin="Margin.Dense" @bind-Value="InputFen" Label="Fen" Variant="Variant.Outlined"></MudTextField>
+        <MudButton Style="height: 2.4rem" Variant="Variant.Filled" Color="Color.Primary" @onclick="() => AddFen(InputFen.TrimStart())">Add</MudButton>
+    </MudItem>
+    <MudItem xs="12" md="9" Style="display: flex; justify-content: center; align-items: center; width: 100%;">
+    <MudStack Class="mud-width-full"  Spacing="1">
+        @foreach (var fen in ListOfFens)
+        {
+            @* <MudItem Class="mud-width-full" xs="12" md="9" Style="display: flex; justify-content: center; align-items: center;"> *@
+                @if (fen == LastAddedFen)
+                {
+                    <MudPaper Class="mud-width-full mud-theme-primary p-1" Style="cursor: pointer;">
+                        <span>* @fen</span>
+                    </MudPaper>
+                }
+                else
+                {
+                    <MudPaper Class="mud-width-full p-1" Style="cursor: pointer;" @onclick="() => AddFen(fen)">
+                        <span>- @fen</span>
+                    </MudPaper>
+                }
+            // </MudItem>
+        }
+    </MudStack>
+    </MudItem>
+</MudGrid>
