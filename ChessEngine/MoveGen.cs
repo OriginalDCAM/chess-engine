@@ -7,6 +7,7 @@ public class MoveGen
     public List<PieceInfo> EnemyPieces;
 
     public Player CanMove;
+
     public List<Move> GenerateMoves(ref Board board, Player color)
     {
         CanMove = board.CanMove;
@@ -38,24 +39,24 @@ public class MoveGen
         {
             switch (piece.PieceIndex)
             {
-                case (int)Piece.PieceTypes.WhitePawn:
-                case (int)Piece.PieceTypes.BlackPawn:
+                case (int) Piece.PieceTypes.WhitePawn:
+                case (int) Piece.PieceTypes.BlackPawn:
                     GeneratePawnMoves(ref moves, piece, ref board);
                     break;
-                case (int)Piece.PieceTypes.WhiteBishop:
-                case (int)Piece.PieceTypes.BlackBishop:
+                case (int) Piece.PieceTypes.WhiteBishop:
+                case (int) Piece.PieceTypes.BlackBishop:
                     GenerateBishopMoves(ref moves);
                     break;
-                case (int)Piece.PieceTypes.WhiteRook:
-                case (int)Piece.PieceTypes.BlackRook:
+                case (int) Piece.PieceTypes.WhiteRook:
+                case (int) Piece.PieceTypes.BlackRook:
                     GenerateRookMoves(ref moves);
                     break;
-                case (int)Piece.PieceTypes.WhiteQueen:
-                case (int)Piece.PieceTypes.BlackQueen:
+                case (int) Piece.PieceTypes.WhiteQueen:
+                case (int) Piece.PieceTypes.BlackQueen:
                     GenerateQueenMoves(ref moves);
                     break;
-                case (int)Piece.PieceTypes.WhiteKing:
-                case (int)Piece.PieceTypes.BlackKing:
+                case (int) Piece.PieceTypes.WhiteKing:
+                case (int) Piece.PieceTypes.BlackKing:
                     GenerateKingMoves(ref moves, piece);
                     break;
             }
@@ -65,21 +66,19 @@ public class MoveGen
         return moves;
     }
 
-    private void GenerateKingMoves(ref List<Move> moves, PieceInfo pieceInfo) {
-
+    private void GenerateKingMoves(ref List<Move> moves, PieceInfo pieceInfo)
+    {
     }
 
     private void GenerateQueenMoves(ref List<Move> moves)
     {
-
     }
 
     private void GenerateRookMoves(ref List<Move> moves)
     {
-
     }
 
-    private void  GenerateBishopMoves(ref List<Move> moves)
+    private void GenerateBishopMoves(ref List<Move> moves)
     {
     }
 
@@ -107,8 +106,18 @@ public class MoveGen
             {
                 moves.Add(new Move(pieceInfo.SquareIndex, targetSquare));
             }
-            
-        }
 
+            var lastMove = board.MoveHistory.LastOrDefault();
+
+            var previousMoveDifference = lastMove.Move.StartSquare - lastMove.Move.TargetSquare;
+
+            if (previousMoveDifference is 16 or -16)
+            {
+                if (pieceInfo.SquareIndex + 1 == lastMove.Move.TargetSquare ||
+                    pieceInfo.SquareIndex - 1 == lastMove.Move.TargetSquare)
+                    if (lastMove.Move.TargetSquare + direction == targetSquare)
+                        moves.Add(new Move(pieceInfo.SquareIndex, targetSquare));
+            }
+        }
     }
 }
