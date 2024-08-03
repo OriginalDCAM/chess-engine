@@ -21,41 +21,42 @@ public static class Piece
 
     public static int GetPieceIndex(char piece)
     {
-        switch (piece)
+        return piece switch
         {
-            case 'p': return (int) PieceTypes.BlackPawn;
-            case 'n': return (int) PieceTypes.BlackKnight;
-            case 'b': return (int) PieceTypes.BlackBishop;
-            case 'r': return (int) PieceTypes.BlackRook;
-            case 'q': return (int) PieceTypes.BlackQueen;
-            case 'k': return (int) PieceTypes.BlackKing;
-            case 'P': return (int) PieceTypes.WhitePawn;
-            case 'N': return (int) PieceTypes.WhiteKnight;
-            case 'B': return (int) PieceTypes.WhiteBishop;
-            case 'R': return (int) PieceTypes.WhiteRook;
-            case 'Q': return (int) PieceTypes.WhiteQueen;
-            case 'K': return (int) PieceTypes.WhiteKing;
-            default: return -1;
-        }
+            'p' => (int) PieceTypes.BlackPawn,
+            'n' => (int)PieceTypes.BlackKnight,
+            'b' => (int)PieceTypes.BlackBishop,
+            'r' => (int)PieceTypes.BlackRook,
+            'q' => (int)PieceTypes.BlackQueen,
+            'k' => (int)PieceTypes.BlackKing,
+            'P' => (int)PieceTypes.WhitePawn,
+            'N' => (int)PieceTypes.WhiteKnight,
+            'B' => (int)PieceTypes.WhiteBishop,
+            'R' => (int)PieceTypes.WhiteRook,
+            'Q' => (int)PieceTypes.WhiteQueen,
+            'K' => (int)PieceTypes.WhiteKing,
+            _ => -1
+            
+        };
     }
 
     public static char GetPieceSymbol(int pieceIndex)
     {
-        switch (pieceIndex)
+        return pieceIndex switch
         {
-            case (int) PieceTypes.WhitePawn: return 'P';
-            case (int) PieceTypes.WhiteKnight: return 'N';
-            case (int) PieceTypes.WhiteBishop: return 'B';
-            case (int) PieceTypes.WhiteRook: return 'R';
-            case (int) PieceTypes.WhiteQueen: return 'Q';
-            case (int) PieceTypes.WhiteKing: return 'K';
-            case (int) PieceTypes.BlackPawn: return 'p';
-            case (int) PieceTypes.BlackKnight: return 'n';
-            case (int) PieceTypes.BlackBishop: return 'b';
-            case (int) PieceTypes.BlackRook: return 'r';
-            case (int) PieceTypes.BlackQueen: return 'q';
-            case (int) PieceTypes.BlackKing: return 'k';
-            default: return ' ';
-        }
+            (int) PieceTypes.WhitePawn => 'P',
+            (int) PieceTypes.WhiteKnight => 'N',
+            (int) PieceTypes.WhiteBishop => 'B',
+            (int) PieceTypes.WhiteRook => 'R',
+            (int) PieceTypes.WhiteQueen => 'Q',
+            (int) PieceTypes.WhiteKing => 'K',
+            (int) PieceTypes.BlackPawn => 'p',
+            (int) PieceTypes.BlackKnight => 'n',
+            (int) PieceTypes.BlackBishop => 'b',
+            (int) PieceTypes.BlackRook => 'r',
+            (int) PieceTypes.BlackQueen => 'q',
+            (int) PieceTypes.BlackKing => 'k',
+            _ => ' '
+        };
     }
 }
