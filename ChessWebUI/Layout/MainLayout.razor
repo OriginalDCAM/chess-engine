@@ -1,14 +1,11 @@
 ﻿@inherits LayoutComponentBase
 <div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+    @* <div class="sidebar"> *@
+    @*     $1$ <NavMenu/> #1# *@
+    @* </div> *@
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-        <MudThemeProvider/>
+        <MudThemeProvider @bind-IsDarkMode="_isDarkMode" Theme="_theme"/>
         <MudPopoverProvider/>
         <MudDialogProvider/>
         <MudSnackbarProvider/>
@@ -17,3 +14,8 @@
         </article>
     </main>
 </div>
+
+@code {
+    private MudTheme _theme = new();
+    private bool _isDarkMode = true;
+}
