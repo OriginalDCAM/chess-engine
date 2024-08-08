@@ -11,7 +11,9 @@ public class BoardTest
     {
         var board = new Board();
         board.GenerateBoardWithFen(expectedFen);
-        
+
+        Assert.AreEqual(board.GetPieceSymbolAtSquare(0), 'r');
+
         // Implement test
     }
 }

@@ -18,7 +18,6 @@ public class Board
     public Board()
     {
         GenerateBoardWithFen();
-        GenerateBoardWithFen("8/5k2/3p4/1p1Pp2p/pP2Pp1P/P4P1K/8/8 b - - 99 50");
     }
 
     public void GenerateBoardWithFen(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2")
@@ -30,6 +29,7 @@ public class Board
 
         string[] ranks = fenParts[0].Split('/');
         string startingColor = fenParts[1];
+        Console.WriteLine(startingColor);
 
 
         if (ranks.Length > 8)
