@@ -1,25 +1,26 @@
-﻿@page "/newui"
+﻿@page "/"
 @using ChessEngine
 @using ChessWebUI.Components.Addons
 @using ChessWebUI.Components
-<h3>NewUi</h3>
 
-    <MudGrid Spacing="1">
-        <MudItem xs="6">
-            <Chessboard Board="_chessBoard" />
+<PageTitle>Bishop's Brew</PageTitle>
+
+<MudGrid Spacing="1">
+    <MudItem xs="6">
+        <Chessboard Board="_chessBoard"/>
+    </MudItem>
+    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+        <MudItem xs="4">
+            @* <MudPaper Height="640px" Class="mud-width-full"/> *@
         </MudItem>
-        <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudItem xs="4">
-                @* <MudPaper Height="640px" Class="mud-width-full"/> *@
-            </MudItem>
-        </MudHidden>
-        <MudFlexBreak/>
-        <MudItem xs="12" md="6">
-            <FenList ListOfFens="_chessBoard.FenList"  AddFen="AddFenToBoard" LastAddedFen="@_chessBoard.LastAddedFen"></FenList>
-        </MudItem>
-    </MudGrid> 
+    </MudHidden>
+    <MudFlexBreak/>
+    <MudItem xs="12" md="6">
+        <FenList ListOfFens="_chessBoard.FenList" AddFen="AddFenToBoard" LastAddedFen="@_chessBoard.LastAddedFen"></FenList>
+    </MudItem>
+</MudGrid>
 
 @code {
     private readonly Board _chessBoard = new();
-    
+
 }
