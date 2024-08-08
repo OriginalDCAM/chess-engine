@@ -45,7 +45,7 @@ public class MoveGen
                     break;
                 case (int) Piece.PieceTypes.WhiteBishop:
                 case (int) Piece.PieceTypes.BlackBishop:
-                    GenerateBishopMoves(ref moves);
+                    GenerateBishopMoves(ref moves, piece, ref board);
                     break;
                 case (int) Piece.PieceTypes.WhiteRook:
                 case (int) Piece.PieceTypes.BlackRook:
@@ -78,8 +78,24 @@ public class MoveGen
     {
     }
 
-    private void GenerateBishopMoves(ref List<Move> moves)
+    private void GenerateBishopMoves(ref List<Move> moves, PieceInfo pieceInfo, ref Board board)
     {
+        var currentSquare = pieceInfo.SquareIndex;
+
+        int[] offset = [7,-7,9,-9];
+        
+        for (int direction = 0; direction < offset.Length; direction++)
+        {
+            for (int targetSquare = currentSquare; targetSquare is < 64 and >= 0;)
+            {
+                targetSquare += offset[direction];
+                moves.Add(new Move(currentSquare, targetSquare));
+                if (board.GetPieceSymbolAtSquare(targetSquare) != '.') break;
+                
+                
+            }
+        }
+
     }
 
     private void GeneratePawnMoves(ref List<Move> moves, PieceInfo pieceInfo, ref Board board)
