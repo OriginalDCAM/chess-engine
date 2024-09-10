@@ -5,9 +5,9 @@ namespace ChessEngine;
 
 public class Board
 {
-    public HashSet<string> FenList { get; } = [];
+    public HashSet<string?> FenList { get; } = [];
 
-    public List<MoveHistory> MoveHistory { get; init; } = new List<MoveHistory>();
+    public List<MoveHistory> MoveHistory { get; } = new();
 
     public Player CanMove { get; set; } = Player.White;
 
@@ -20,7 +20,7 @@ public class Board
         GenerateBoardWithFen();
     }
 
-    public void GenerateBoardWithFen(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2")
+    public void GenerateBoardWithFen(string? fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2")
     {
         Console.WriteLine($"trying to generate board with this fen: {fen}");
         if (Bitboard.Any(bitboard => bitboard != 0)) Array.Clear(Bitboard);
@@ -124,6 +124,8 @@ public class Board
     {
         char pieceSymbol = GetPieceSymbolAtSquare(squareIndex);
 
+        if (pieceSymbol == '.') return Player.Empty;
+
         return char.IsUpper(pieceSymbol) ? Player.White : Player.Black;
     }
 
@@ -133,10 +135,15 @@ public class Board
         Console.WriteLine(GetPieceSymbolAtSquare(move.TargetSquare));
         if (GetPieceSymbolAtSquare(move.TargetSquare) != 'P' && GetPieceSymbolAtSquare(move.TargetSquare) != 'p')
             return false;
-        // Check if the pawn moved two squares on its previous move
+        
         var lastMove = board.MoveHistory.LastOrDefault();
+        // Check for a normal capture instead of en passant
+        if (lastMove.Move.TargetSquare / 8 == move.TargetSquare / 8) return false;
+        
+        // Check if the pawn moved two squares on its previous move
         if (Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) != 16)
             return false;
+
 
         // Check if the current move is a diagonal capture to the square behind the opponent's pawn
         int direction = GetPieceSymbolAtSquare(move.TargetSquare) == 'P' ? -8 : 8;
