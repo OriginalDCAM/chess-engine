@@ -5,6 +5,13 @@
     background: #0b5ed7;
 }
 
+.square-attack-overlay {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    opacity: 33.3%;
+}
+
 .chessboard {
     border: solid lightslategrey 0.8rem;
     display: flex;

@@ -8,7 +8,9 @@
                 int currentSquare = row * 8 + col;
                 <div class="square"
                      @onclick="@(() => OnSquareClick(currentSquare))"
-                     style="background-color: @((row + col) % 2 == 0 ? "#CD3F3E" : "#1C2938")">
+                     style="background-color: @((row + col) % 2 == 0 ? "#CD3F3E" : "#1C2938");">
+                    <div class="square-attack-overlay" style="display: @(_visualizeAttackList.Contains(currentSquare) ? "block" : "none")">
+                    </div>
                     @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
                     {
                         <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
