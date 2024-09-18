@@ -1,7 +1,7 @@
 ﻿namespace ChessEngine;
 
-public struct Move(int startSquare, int targetSquare)
+public record struct Move(int StartSquare, int TargetSquare)
 {
-    public readonly int StartSquare = startSquare;
-    public readonly int TargetSquare = targetSquare;
+    public readonly int StartSquare = StartSquare;
+    public readonly int TargetSquare = TargetSquare;
 }
