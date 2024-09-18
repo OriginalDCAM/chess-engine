@@ -12,13 +12,13 @@ public class BoardTest
     public void TestInitializeBoard(string expectedFen)
     {
         var board = new Board();
-        board.GenerateBoardWithFen(expectedFen);
+        board.InitializeBoard(expectedFen);
 
-        var fenParts = expectedFen.Split();
-        
+        string[]? fenParts = expectedFen.Split();
+
         string[] ranks = fenParts[0].Split('/');
 
-       for (var rank = 0; rank < 8; rank++)
+        for (var rank = 0; rank < 8; rank++)
         {
             var file = 0;
             foreach (char character in ranks[rank])
@@ -28,10 +28,10 @@ public class BoardTest
                     file += int.Parse(character.ToString());
                     continue;
                 }
+
                 Assert.AreEqual(board.GetPieceSymbolAtSquare(rank * 8 + file), character);
                 file++;
             }
         }
-
     }
 }

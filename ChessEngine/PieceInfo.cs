@@ -10,5 +10,4 @@ public struct PieceInfo
         SquareIndex = squareIndex;
         PieceIndex = pieceIndex;
     }
-
 }

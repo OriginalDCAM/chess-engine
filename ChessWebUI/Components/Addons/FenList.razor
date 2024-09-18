@@ -5,7 +5,7 @@
     </MudItem>
     <MudItem xs="12" md="9" Style="display: flex; justify-content: center; align-items: center; width: 100%;">
         <MudStack Class="mud-width-full" Spacing="1">
-            @foreach (var fen in ListOfFens)
+            @foreach (string? fen in ListOfFens)
             {
                 @* <MudItem Class="mud-width-full" xs="12" md="9" Style="display: flex; justify-content: center; align-items: center;"> *@
                 @if (fen == LastAddedFen)

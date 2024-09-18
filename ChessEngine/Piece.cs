@@ -24,19 +24,18 @@ public static class Piece
         return piece switch
         {
             'p' => (int) PieceTypes.BlackPawn,
-            'n' => (int)PieceTypes.BlackKnight,
-            'b' => (int)PieceTypes.BlackBishop,
-            'r' => (int)PieceTypes.BlackRook,
-            'q' => (int)PieceTypes.BlackQueen,
-            'k' => (int)PieceTypes.BlackKing,
-            'P' => (int)PieceTypes.WhitePawn,
-            'N' => (int)PieceTypes.WhiteKnight,
-            'B' => (int)PieceTypes.WhiteBishop,
-            'R' => (int)PieceTypes.WhiteRook,
-            'Q' => (int)PieceTypes.WhiteQueen,
-            'K' => (int)PieceTypes.WhiteKing,
+            'n' => (int) PieceTypes.BlackKnight,
+            'b' => (int) PieceTypes.BlackBishop,
+            'r' => (int) PieceTypes.BlackRook,
+            'q' => (int) PieceTypes.BlackQueen,
+            'k' => (int) PieceTypes.BlackKing,
+            'P' => (int) PieceTypes.WhitePawn,
+            'N' => (int) PieceTypes.WhiteKnight,
+            'B' => (int) PieceTypes.WhiteBishop,
+            'R' => (int) PieceTypes.WhiteRook,
+            'Q' => (int) PieceTypes.WhiteQueen,
+            'K' => (int) PieceTypes.WhiteKing,
             _ => -1
-            
         };
     }
 

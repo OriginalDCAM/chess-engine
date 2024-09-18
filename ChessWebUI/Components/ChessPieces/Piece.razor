@@ -2,7 +2,7 @@
 
 @code {
     [Parameter] public char PieceType { get; set; }
-    
+
     private readonly Dictionary<char, Type> _components = new()
     {
         ['p'] = typeof(Pawn),
@@ -19,15 +19,16 @@
         ['Q'] = typeof(Queen),
         ['.'] = typeof(Empty)
     };
-    
+
     private IDictionary<string, object>? _parameters;
 
     protected override void OnParametersSet()
     {
-        
         _parameters = new Dictionary<string, object>()
         {
-            { "IsWhite", char.IsUpper(PieceType) }
+            {
+                "IsWhite", char.IsUpper(PieceType)
+            }
         };
     }
 

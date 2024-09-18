@@ -8,13 +8,31 @@ public partial class Chessboard : ComponentBase
 {
     [Parameter] public required Board Board { get; set; }
 
-    public List<int>? _visualizeAttackList { get; set; }
+    public List<int>? VisualizeAttackList { get; set; }
 
     private int _selectedSquare = -1; // Track selected square
 
+    protected bool promotionPending = false;
+    private int promotionSquare;
+
     public Chessboard()
     {
-        _visualizeAttackList = [];
+        VisualizeAttackList = [];
+    }
+    
+    protected override void OnInitialized()
+    {
+        Board.OnPawnPromotion += HandlePawnPromotion;
+    }
+
+    private async void HandlePawnPromotion(int squareIndex, Player player)
+    {
+        promotionPending = true;
+        promotionSquare = squareIndex;
+
+        await OpenDialogAsync(squareIndex, player);
+        
+        Console.WriteLine("Pawn promotion pending");
     }
 
     private void OnSquareClick(int square)
@@ -27,23 +45,19 @@ public partial class Chessboard : ComponentBase
                 var color = Board.GetColorAtSquare(_selectedSquare);
                 if (Board.CanMove != color) return;
                 var moveGen = new MoveGen();
-                var board = Board;
-                List<Move> moves = moveGen.GenerateMoves(ref board, color);
+                var moves = moveGen.GenerateMoves(Board, color);
                 foreach (var move in moves)
-                {
                     if (move.StartSquare == _selectedSquare)
                     {
-                        _visualizeAttackList?.Add(move.TargetSquare);
+                        VisualizeAttackList?.Add(move.TargetSquare);
                         StateHasChanged();
                     }
-                    
-                }
             }
         }
         else if (_selectedSquare == square)
         {
             _selectedSquare = -1;
-            _visualizeAttackList?.Clear();
+            VisualizeAttackList?.Clear();
             StateHasChanged();
         }
         else // Piece already selected, move it
@@ -52,22 +66,9 @@ public partial class Chessboard : ComponentBase
             var move = new Move(_selectedSquare, square);
             Board.Move(move, color); // Make the move
             _selectedSquare = -1; // Deselect after move
-            _visualizeAttackList.Clear();
+            VisualizeAttackList?.Clear();
             StateHasChanged();
         }
     }
 
-    private void AddFenToBoard(string? fen)
-    {
-        if (fen == null) return;
-        try
-        {
-            Board.GenerateBoardWithFen(fen);
-            StateHasChanged();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
-    }
 }

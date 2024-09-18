@@ -1,15 +1,24 @@
 ﻿.square {
     width: 12.5%;
     height: 12.5%;
+    display: flex;
     flex-basis: 12.5%;
     background: #0b5ed7;
+    position: relative; /* Add this to contain the overlay */
 }
 
 .square-attack-overlay {
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    opacity: 33.3%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 50%;
+    width: 33.3%;
+    height: 33.3%;
+    margin: auto;
+    background: rgba(0, 0, 0, 0.24); /* Semi-transparent white overlay */
+    z-index: 3;
 }
 
 .chessboard {

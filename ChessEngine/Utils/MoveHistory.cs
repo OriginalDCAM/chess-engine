@@ -10,6 +10,4 @@ public struct MoveHistory
         Move = move;
         Color = color;
     }
-    
-    
 }

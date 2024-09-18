@@ -1,4 +1,10 @@
-﻿@using ChessWebUI.Components.ChessPieces
+﻿@using ChessEngine
+@using ChessWebUI.Components.Addons
+@using ChessWebUI.Components.ChessPieces
+@inject IDialogService DialogService
+@code {
+
+}
 <MudItem>
     <div class="chessboard">
         @for (var row = 0; row < 8; row++)
@@ -9,8 +15,12 @@
                 <div class="square"
                      @onclick="@(() => OnSquareClick(currentSquare))"
                      style="background-color: @((row + col) % 2 == 0 ? "#CD3F3E" : "#1C2938");">
-                    <div class="square-attack-overlay" style="display: @(_visualizeAttackList.Contains(currentSquare) ? "block" : "none")">
-                    </div>
+
+                    @if (VisualizeAttackList != null && VisualizeAttackList.Contains(currentSquare))
+                    {
+                        <div class="square-attack-overlay"></div>
+                    }
+
                     @if (Board.GetPieceSymbolAtSquare(currentSquare) != '.')
                     {
                         <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
@@ -18,5 +28,21 @@
                 </div>
             }
         }
+
     </div>
 </MudItem>
+
+@code {
+
+    private async Task OpenDialogAsync(int square, Player player)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        var parameters = new DialogParameters<PromotionDialog>
+        {
+            { Player => player, player }
+        };
+
+        var dialog = await DialogService.ShowAsync<PromotionDialog>("Simple Dialog", parameters, options);
+    }
+}
