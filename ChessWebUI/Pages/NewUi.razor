@@ -2,6 +2,7 @@
 @using ChessEngine
 @using ChessWebUI.Components.Addons
 @using ChessWebUI.Components
+@inject SessionStorageAccessor SessionStorageAccessor
 
 <PageTitle>Bishop's Brew</PageTitle>
 
@@ -22,5 +23,11 @@
 
 @code {
     private readonly Board _chessBoard = new();
+
+    protected override void OnParametersSet()
+    {
+            _chessBoard.InitializeBoard();
+    
+    }
 
 }
