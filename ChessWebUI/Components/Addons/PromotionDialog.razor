@@ -1,0 +1,69 @@
+﻿@using ChessEngine
+@using ChessWebUI.Components.ChessPieces
+<MudDialog>
+    <TitleContent>
+        Promotion
+    </TitleContent>
+    <DialogContent>
+        <!-- TODO: Maak hier een hebruikbaar component van --->
+        <MudRadioGroup @bind-Value="pieceSelected">
+            <MudGrid Style="height: 100%; width: 100%; display: flex; justify-content: center; align-items: center;">
+                <MudItem xs="12" Style="display: flex; justify-content: center;">
+                    <MudRadio Placement="Placement.Top" Label="Queen" Value="@("Q")" Style="width: 50%; height: 25%; margin: .2rem;">
+                        <MudItem Style="display: flex; align-content: center; flex-direction: column;">
+                            <Queen IsWhite="isWhite"></Queen>
+                            <MudText Typo="Typo.body1" Align="Align.Center">
+                                Promote to Queen
+                            </MudText>
+                        </MudItem>
+                    </MudRadio>
+                    <MudRadio Placement="Placement.Top" Label="Rook" Value="@("R")" Style="width: 50%; height: 25%; margin: .2rem;">
+                        <MudItem Style="display: flex; align-content: center; flex-direction: column;">
+                            <Rook IsWhite="isWhite"></Rook>
+                            <MudText Typo="Typo.body1" Align="Align.Center">
+                                Promote to Rook
+                            </MudText>
+                        </MudItem>
+                    </MudRadio>
+                </MudItem>
+                <MudItem xs="12" Style="display: flex; justify-content: center;">
+                    <MudRadio Placement="Placement.Top" Label="Bishop" Value="@("B")" Style="width: 50%; height: 25%; margin: .2rem;">
+                        <MudItem Style="display: flex; align-content: center; flex-direction: column;">
+                            <Bishop IsWhite="isWhite"></Bishop>
+                            <MudText Typo="Typo.body1" Align="Align.Center">
+                                Promote to Bishop
+                            </MudText>
+                        </MudItem>
+                    </MudRadio>
+                    <MudRadio Placement="Placement.Top" Label="Knight" Value="@("N")" Style="width: 50%; height: 25%; margin: .2rem;">
+                        <MudItem Style="display: flex; align-content: center; flex-direction: column;">
+                            <Knight IsWhite="isWhite"></Knight>
+                            <MudText Typo="Typo.body1" Align="Align.Center">
+                                Promote to Knight
+                            </MudText>
+                        </MudItem>
+                    </MudRadio>
+                </MudItem>
+
+            </MudGrid>
+        </MudRadioGroup>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] private MudDialogInstance MudDialog { get; set; }
+
+    public string pieceSelected { get; set; }
+
+    [Parameter] public Player Player { get; set; }
+
+    private bool isWhite => Player == Player.White;
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
