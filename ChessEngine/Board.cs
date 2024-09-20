@@ -107,7 +107,7 @@ public class Board
         Console.WriteLine(
             $"{BoardHelper.ConvertSquareToSan(move.StartSquare)} to {BoardHelper.ConvertSquareToSan(move.TargetSquare)}");
         var moveGen = new MoveGen();
-        var moves = moveGen.GenerateMoves(this, color);
+        var moves = moveGen.GenerateMoves( this, color);
         if (!moves.Contains(move)) return false;
 
 
@@ -122,7 +122,7 @@ public class Board
         Bitboards[fromBb] &= ~fromMask; // preform AND operation on the bitboard 
         Bitboards[fromBb] |= toMask; // preforms OR operation on the bitboard
         
-        if (IsPromotion(move.TargetSquare, color))
+        if (IsPromotion(move.TargetSquare, color) && char.ToLower(GetPieceSymbolAtSquare(move.TargetSquare)) == 'p')
         {
             OnPawnPromotion.Invoke(move.TargetSquare, color);
         }
