@@ -229,7 +229,7 @@ public class MoveGen
         {
             int filePos = BoardHelper.GetFilePosition(_selectedPiece.SquareIndex);
             int rankPos = BoardHelper.GetRankPosition(_selectedPiece.SquareIndex);
-            
+
             for (int targetSquare = _selectedPiece.SquareIndex; targetSquare is < 64 and >= 0;)
             {
                 targetSquare += offsets[direction];
@@ -266,22 +266,34 @@ public class MoveGen
                 moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare + direction));
         }
 
-        int[] offsets = {direction - 1, direction + 1};
+        int[] offsets = {direction - 1, direction + 1}; // Check for left and right diagonal
         foreach (int offset in offsets)
         {
             targetSquare = _selectedPiece.SquareIndex + offset;
+
+            // Regular diagonal capture check
             if (board.GetPieceSymbolAtSquare(targetSquare) != '.' && board.GetColorAtSquare(targetSquare) != CanMove)
+            {
                 moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
+            }
 
             var lastMove = board.MoveHistory.LastOrDefault();
 
-            int previousMoveDifference = lastMove.Move.StartSquare - lastMove.Move.TargetSquare;
-
-            if (previousMoveDifference is 16 or -16)
+            // Check if the last move was a pawn moving two squares forward
+            if (Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) == 16)
+            {
+                // Check if the last move's target is directly adjacent to the current pawn
                 if (_selectedPiece.SquareIndex + 1 == lastMove.Move.TargetSquare ||
                     _selectedPiece.SquareIndex - 1 == lastMove.Move.TargetSquare)
-                    if (lastMove.Move.TargetSquare + direction == targetSquare)
-                        moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
+                {
+                    // Ensure the current pawn is capturing diagonally to an empty square
+                    if (board.GetPieceSymbolAtSquare(targetSquare) == '.' &&
+                        lastMove.Move.TargetSquare + direction == targetSquare)
+                    {
+                        moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare)); // Add en passant move
+                    }
+                }
+            }
         }
     }
 }
