@@ -1,4 +1,4 @@
-﻿namespace ChessEngine;
+﻿namespace ChessEngine.Structs;
 
 public record struct Move(int StartSquare, int TargetSquare)
 {

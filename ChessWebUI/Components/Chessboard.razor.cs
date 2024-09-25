@@ -1,4 +1,6 @@
 ﻿using ChessEngine;
+using ChessEngine.Core;
+using ChessEngine.Structs;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

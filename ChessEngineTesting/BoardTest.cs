@@ -1,4 +1,6 @@
-﻿namespace ChessEngineTesting;
+﻿using ChessEngine.Core;
+
+namespace ChessEngineTesting;
 
 using ChessEngine;
 

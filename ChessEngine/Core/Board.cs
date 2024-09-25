@@ -1,7 +1,7 @@
-﻿using ChessEngine.Utils;
-using Serilog.Parsing;
+﻿using ChessEngine.Structs;
+using ChessEngine.Utils;
 
-namespace ChessEngine;
+namespace ChessEngine.Core;
 
 public class Board
 {

@@ -1,6 +1,7 @@
-﻿using ChessEngine.Utils;
+﻿using ChessEngine.Structs;
+using ChessEngine.Utils;
 
-namespace ChessEngine;
+namespace ChessEngine.Core;
 
 public class MoveGen
 {

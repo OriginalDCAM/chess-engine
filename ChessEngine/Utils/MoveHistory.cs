@@ -1,4 +1,6 @@
-﻿namespace ChessEngine.Utils;
+﻿using ChessEngine.Structs;
+
+namespace ChessEngine.Utils;
 
 public struct MoveHistory
 {
