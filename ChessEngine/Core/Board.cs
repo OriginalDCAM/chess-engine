@@ -15,7 +15,7 @@ public class Board
 
     private ulong[] Bitboards { get; } = new ulong[12];
 
-    public event Action<int, Player> OnPawnPromotion;
+    public event Action<int, Player>? OnPawnPromotion;
 
     public Board()
     {
@@ -106,54 +106,61 @@ public class Board
     {
         Console.WriteLine(
             $"{BoardHelper.ConvertSquareToSan(move.StartSquare)} to {BoardHelper.ConvertSquareToSan(move.TargetSquare)}");
+        Console.WriteLine($"{move.StartSquare} to {move.TargetSquare}");
+
         var moveGen = new MoveGen();
-        var moves = moveGen.GenerateMoves( this, color);
+        var moves = moveGen.GenerateMoves(this, color);
         if (!moves.Contains(move)) return false;
 
-
-
-        ulong fromMask = 1UL << move.StartSquare;
-        ulong toMask = 1UL << move.TargetSquare;
-
+        // Get bitboard indices for the piece at start and target squares
         int fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
         int toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
 
+        // Remove the piece from the starting square (clear square)
+        BitBoardHelper.ClearSquare(ref Bitboards[fromBb], move.StartSquare);
 
-        Bitboards[fromBb] &= ~fromMask; // preform AND operation on the bitboard 
-        Bitboards[fromBb] |= toMask; // preforms OR operation on the bitboard
-        
+        // Move the piece to the target square (set square)
+        BitBoardHelper.SetSquare(ref Bitboards[fromBb], move.TargetSquare);
+
+        // Handle pawn promotion
         if (IsPromotion(move.TargetSquare, color) && char.ToLower(GetPieceSymbolAtSquare(move.TargetSquare)) == 'p')
         {
             OnPawnPromotion.Invoke(move.TargetSquare, color);
         }
 
-        if (IsEnPassant(move))
+        // Handle en passant capture
+        var boardState = new BoardState(this);
+        if (boardState.IsEnPassant(move))
         {
             int direction = color == Player.White ? 8 : -8;
             int capturedPawnSquare = move.TargetSquare + direction;
-            ulong capturedPawnMask = 1UL << capturedPawnSquare;
+
             Console.WriteLine($"Pawn square that needs to be deleted: {capturedPawnSquare}");
-            Console.WriteLine(Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare)));
-            // Update the opponent's pawn bitboard
-            Bitboards[Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare))] &= ~capturedPawnMask;
-        }
-        else if (toBb != -1)
+            Console.WriteLine($"Piece on square {capturedPawnSquare}: {GetPieceSymbolAtSquare(capturedPawnSquare)}");
+
+            // Remove the captured pawn from the opponent's bitboard
+            BitBoardHelper.ClearSquare(ref Bitboards[Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare))],
+                capturedPawnSquare);
+        } else if (toBb != -1)
         {
-            Bitboards[toBb] ^= toMask;
+            // Handle normal capture
+            BitBoardHelper.ClearSquare(ref Bitboards[toBb], move.TargetSquare);
         }
 
+        // Add move to history
         MoveHistory.Add(new MoveHistory(move, color));
 
+        // Switch turns
         CanMove = Player.White == CanMove ? Player.Black : Player.White;
 
-        Console.WriteLine($"this player can now move: {CanMove}");
+        Console.WriteLine($"This player can now move: {CanMove}");
         return true;
     }
 
     private bool IsPromotion(int moveTargetSquare, Player player)
     {
         int rank = moveTargetSquare / 8;
-        
+
         if (player == Player.White && rank == 0) return true;
 
         if (player == Player.Black && rank == 7) return true;
@@ -182,25 +189,4 @@ public class Board
         return char.IsUpper(pieceSymbol) ? Player.White : Player.Black;
     }
 
-    private bool IsEnPassant(Move move)
-    {
-        // Check if the moved piece is a pawn
-        if (GetPieceSymbolAtSquare(move.TargetSquare) != 'P' && GetPieceSymbolAtSquare(move.TargetSquare) != 'p')
-            return false;
-
-        var lastMove = MoveHistory.LastOrDefault();
-        // Check for a normal capture instead of en passant
-        if (lastMove.Move.TargetSquare / 8 == move.TargetSquare / 8) return false;
-
-        // Check if the pawn moved two squares on its previous move
-        if (Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) != 16)
-            return false;
-
-
-        // Check if the current move is a diagonal capture to the square behind the opponent's pawn
-        int direction = GetPieceSymbolAtSquare(move.TargetSquare) == 'P' ? -8 : 8;
-        return Math.Abs(move.StartSquare - move.TargetSquare) == 9 ||
-               (Math.Abs(move.StartSquare - move.TargetSquare) == 7 &&
-                GetPieceSymbolAtSquare(move.TargetSquare - direction) != '.');
-    }
 }
