@@ -34,6 +34,16 @@ public class IsEnPassantTest
     [TestMethod]
     public void IsEnPassant_PawnMovesStraight_ReturnsFalse()
     {
+        // Simulate a white pawn move
+        _board.Move(new Move(51, 35), Player.White);
+
+        // Create an instance of BoardState with the current board
+        var boardState = new BoardState(_board);
+    
+        // Simulate the black move that should trigger en passant
+        var move = new Move(34, 42);
+
+        Assert.IsFalse(boardState.IsEnPassant(move), "Expected IsEnPassant_PawnMovesStraight to return false");
     }
 
     [TestMethod]
@@ -44,5 +54,15 @@ public class IsEnPassantTest
     [TestMethod]
     public void IsEnPassant_OpponentPawnMovedOneSquare_ReturnsFalse()
     {
+        // Simulate a white pawn move
+        _board.Move(new Move(51, 43), Player.White);
+
+        // Create an instance of BoardState with the current board
+        var boardState = new BoardState(_board);
+    
+        // Simulate the black move that should trigger en passant
+        var move = new Move(34, 43);
+
+        Assert.IsFalse(boardState.IsEnPassant(move), "Expected IsEnPassant_PawnMovesStraight to return false");
     }
 }
