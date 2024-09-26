@@ -34,6 +34,8 @@ public partial class Chessboard : ComponentBase
 
         await OpenDialogAsync(squareIndex, player);
         
+        StateHasChanged();
+        
         Console.WriteLine("Pawn promotion pending");
     }
 

@@ -1,6 +1,8 @@
 ﻿@using ChessEngine
 @using ChessWebUI.Components.Addons
 @using ChessWebUI.Components.ChessPieces
+@using MudBlazor.Extensions
+@using Piece = ChessWebUI.Components.ChessPieces.Piece
 @inject IDialogService DialogService
 @code {
 
@@ -44,5 +46,17 @@
         };
 
         var dialog = await DialogService.ShowAsync<PromotionDialog>("Simple Dialog", parameters, options);
+        
+        var result = await dialog.Result;
+        
+        if (!result.Canceled)
+        {
+            char.TryParse(result.Data.ToString(), out char piece);
+            Board.PromotePawn(square, piece);
+        }
+        else
+        {
+            Board.PromotePawn(square, player == Player.White ? 'Q' : 'q');
+        }
     }
 }

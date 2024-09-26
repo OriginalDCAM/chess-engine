@@ -9,7 +9,7 @@
         <MudRadioGroup @bind-Value="pieceSelected">
             <MudGrid Style="height: 100%; width: 100%; display: flex; justify-content: center; align-items: center;">
                 <MudItem xs="12" Style="display: flex; justify-content: center;">
-                    <MudRadio Placement="Placement.Top" Label="Queen" Value="@("Q")" Style="width: 50%; height: 25%; margin: .2rem;">
+                    <MudRadio Placement="Placement.Top" Label="Queen" Value="@(isWhite ? "Q" : "q")" Style="width: 50%; height: 25%; margin: .2rem;">
                         <MudItem Style="display: flex; align-content: center; flex-direction: column;">
                             <Queen IsWhite="isWhite"></Queen>
                             <MudText Typo="Typo.body1" Align="Align.Center">
@@ -17,7 +17,7 @@
                             </MudText>
                         </MudItem>
                     </MudRadio>
-                    <MudRadio Placement="Placement.Top" Label="Rook" Value="@("R")" Style="width: 50%; height: 25%; margin: .2rem;">
+                    <MudRadio Placement="Placement.Top" Label="Rook" Value="@(isWhite ? "R" : "r")" Style="width: 50%; height: 25%; margin: .2rem;">
                         <MudItem Style="display: flex; align-content: center; flex-direction: column;">
                             <Rook IsWhite="isWhite"></Rook>
                             <MudText Typo="Typo.body1" Align="Align.Center">
@@ -27,7 +27,7 @@
                     </MudRadio>
                 </MudItem>
                 <MudItem xs="12" Style="display: flex; justify-content: center;">
-                    <MudRadio Placement="Placement.Top" Label="Bishop" Value="@("B")" Style="width: 50%; height: 25%; margin: .2rem;">
+                    <MudRadio Placement="Placement.Top" Label="Bishop" Value="@(isWhite ? "B" : "b")" Style="width: 50%; height: 25%; margin: .2rem;">
                         <MudItem Style="display: flex; align-content: center; flex-direction: column;">
                             <Bishop IsWhite="isWhite"></Bishop>
                             <MudText Typo="Typo.body1" Align="Align.Center">
@@ -35,7 +35,7 @@
                             </MudText>
                         </MudItem>
                     </MudRadio>
-                    <MudRadio Placement="Placement.Top" Label="Knight" Value="@("N")" Style="width: 50%; height: 25%; margin: .2rem;">
+                    <MudRadio Placement="Placement.Top" Label="Knight" Value="@(isWhite ? "N" : "n")" Style="width: 50%; height: 25%; margin: .2rem;">
                         <MudItem Style="display: flex; align-content: center; flex-direction: column;">
                             <Knight IsWhite="isWhite"></Knight>
                             <MudText Typo="Typo.body1" Align="Align.Center">
@@ -62,8 +62,16 @@
     [Parameter] public Player Player { get; set; }
 
     private bool isWhite => Player == Player.White;
+    
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    private void Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(pieceSelected));
+    }
 
-    private void Cancel() => MudDialog.Cancel();
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 }

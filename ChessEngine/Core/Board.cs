@@ -115,6 +115,12 @@ public class Board
         // Get bitboard indices for the piece at start and target squares
         int fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
         int toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
+        
+        // Handle pawn promotion
+        if (IsPromotion(move.TargetSquare, color) && char.ToLower(GetPieceSymbolAtSquare(move.StartSquare)) == 'p')
+        {
+            OnPawnPromotion.Invoke(move.TargetSquare, color);
+        }
 
         // Remove the piece from the starting square (clear square)
         BitBoardHelper.ClearSquare(ref Bitboards[fromBb], move.StartSquare);
@@ -122,11 +128,8 @@ public class Board
         // Move the piece to the target square (set square)
         BitBoardHelper.SetSquare(ref Bitboards[fromBb], move.TargetSquare);
 
-        // Handle pawn promotion
-        if (IsPromotion(move.TargetSquare, color) && char.ToLower(GetPieceSymbolAtSquare(move.TargetSquare)) == 'p')
-        {
-            OnPawnPromotion.Invoke(move.TargetSquare, color);
-        }
+        
+
 
         // Handle en passant capture
         var boardState = new BoardState(this);
@@ -141,7 +144,9 @@ public class Board
             // Remove the captured pawn from the opponent's bitboard
             BitBoardHelper.ClearSquare(ref Bitboards[Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare))],
                 capturedPawnSquare);
-        } else if (toBb != -1)
+        }
+
+        else if (toBb != -1)
         {
             // Handle normal capture
             BitBoardHelper.ClearSquare(ref Bitboards[toBb], move.TargetSquare);
@@ -161,11 +166,22 @@ public class Board
     {
         int rank = moveTargetSquare / 8;
 
+        Console.WriteLine($"Rank: {rank}");
+
         if (player == Player.White && rank == 0) return true;
 
         if (player == Player.Black && rank == 7) return true;
 
         return false;
+    }
+
+    public void PromotePawn(int squareIndex, char pieceSymbol)
+    {
+        char pawnPiece = CanMove == Player.White ? 'p' : 'P';
+        Console.WriteLine(
+            $"square index: {squareIndex}, pawn piece symbol: {pawnPiece}, promotion piece symbol:{pieceSymbol}");
+        BitBoardHelper.ToggleSquare(ref Bitboards[Piece.GetPieceIndex(pawnPiece)], squareIndex);
+        BitBoardHelper.SetSquare(ref Bitboards[Piece.GetPieceIndex(pieceSymbol)], squareIndex);
     }
 
     public char GetPieceSymbolAtSquare(int squareIndex)
@@ -188,5 +204,4 @@ public class Board
 
         return char.IsUpper(pieceSymbol) ? Player.White : Player.Black;
     }
-
 }
