@@ -1,4 +1,5 @@
 ﻿@using ChessEngine
+@using ChessEngine.Utils
 @using ChessWebUI.Components.Addons
 @using ChessWebUI.Components.ChessPieces
 @using MudBlazor.Extensions
@@ -11,12 +12,20 @@
     <div class="chessboard">
         @for (var row = 0; row < 8; row++)
         {
-            for (var col = 0; col < 8; col++)
+                for (var col = 0; col < 8; col++)
             {
                 int currentSquare = row * 8 + col;
                 <div class="square"
                      @onclick="@(() => OnSquareClick(currentSquare))"
                      style="background-color: @((row + col) % 2 == 0 ? "#CD3F3E" : "#1C2938");">
+                    @if (@BoardHelper.GetFilePosition(currentSquare) == 0)
+                    {
+                    <p style="position: absolute; bottom: 0; left: 0; font-weight: bolder; font-size: 18px; margin:  1.5px; color: @((row + col) % 2 == 0 ? "#1C2938" : "#ffffff");">@BoardHelper.GetRankPositionPretty(currentSquare)</p>
+                    }
+                    @if (BoardHelper.GetRankPosition(currentSquare) == 0)
+                    {
+                    <p style="position: absolute; top: 0; right: 0; font-weight: bolder; font-size: 18px; margin: 1.5px; color: @((row + col) % 2 == 0 ? "#1C2938" : "#ffffff");">@BoardHelper.GetFileString(currentSquare)</p>
+                    }
 
                     @if (VisualizeAttackList != null && VisualizeAttackList.Contains(currentSquare))
                     {

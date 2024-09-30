@@ -113,8 +113,8 @@ public class Board
         if (!moves.Contains(move)) return false;
 
         // Get bitboard indices for the piece at start and target squares
-        int fromBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
-        int toBb = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
+        int startSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
+        int targetSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
         
         // Handle pawn promotion
         if (IsPromotion(move.TargetSquare, color) && char.ToLower(GetPieceSymbolAtSquare(move.StartSquare)) == 'p')
@@ -123,17 +123,19 @@ public class Board
         }
 
         // Remove the piece from the starting square (clear square)
-        BitBoardHelper.ClearSquare(ref Bitboards[fromBb], move.StartSquare);
+        BitBoardHelper.ClearSquare(ref Bitboards[startSquarePieceIndex], move.StartSquare);
 
         // Move the piece to the target square (set square)
-        BitBoardHelper.SetSquare(ref Bitboards[fromBb], move.TargetSquare);
-
-        
-
+        BitBoardHelper.SetSquare(ref Bitboards[startSquarePieceIndex], move.TargetSquare);
 
         // Handle en passant capture
         var boardState = new BoardState(this);
-        if (boardState.IsEnPassant(move))
+        if (targetSquarePieceIndex != -1)
+        {
+            // Handle normal capture
+            BitBoardHelper.ClearSquare(ref Bitboards[targetSquarePieceIndex], move.TargetSquare);
+        }
+        else if (boardState.IsEnPassant(move) && char.ToLower(GetPieceSymbolAtSquare(move.TargetSquare)) == 'p')
         {
             int direction = color == Player.White ? 8 : -8;
             int capturedPawnSquare = move.TargetSquare + direction;
@@ -144,12 +146,6 @@ public class Board
             // Remove the captured pawn from the opponent's bitboard
             BitBoardHelper.ClearSquare(ref Bitboards[Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare))],
                 capturedPawnSquare);
-        }
-
-        else if (toBb != -1)
-        {
-            // Handle normal capture
-            BitBoardHelper.ClearSquare(ref Bitboards[toBb], move.TargetSquare);
         }
 
         // Add move to history
