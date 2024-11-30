@@ -1,8 +1,14 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=2cff4179_002Ddeac_002D4bcf_002D8f30_002Db9574f954b6c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestMethod1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/CodeInspection/ExcludedFiles/FilesAndFoldersToSkip2/=C95F607D_002D7E56_002D4B5D_002DAE6F_002D7B308B4D0738_002Ff_003ABoard_002Ecs/@EntryIndexedValue">ForceIncluded</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=b6a0d80d_002D059d_002D437f_002Db3e4_002D7aba9d0a07d7/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestInitializeBoard" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;MSTest::142A0BA5-A2DD-41AF-8F87-123602547743::net8.0::ChessEngineTesting.BoardTest&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::142A0BA5-A2DD-41AF-8F87-123602547743::net8.0::ChessEngineTesting.BoardTest.TestInitializeBoard&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;MSTest::142A0BA5-A2DD-41AF-8F87-123602547743::net8.0::ChessEngineTesting.IsEnPassantTest&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	
+	
+	
+	
 	
 	</wpf:ResourceDictionary>
