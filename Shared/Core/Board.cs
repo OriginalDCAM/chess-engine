@@ -1,9 +1,11 @@
-﻿using System.Diagnostics;
-using ChessEngine.Structs;
+﻿using ChessEngine.Structs;
 using ChessEngine.Utils;
 
 namespace ChessEngine.Core;
 
+/// <summary>
+/// Class <c>Board</c> provides methods to manipulate a chessboard.
+/// </summary>
 public class Board
 {
     private HashSet<string?> _fenList = [];
@@ -18,26 +20,21 @@ public class Board
         }
     }
 
-    public List<MoveHistory> MoveHistory { get; set; } = new();
-
-    public GameStates BoardState { get; set; }
-
+    public Stack<MoveHistory> MoveHistory { get; } = new();
     public Player CanMove { get; set; } = Player.White;
 
     public string? LastAddedFen { get; private set; }
 
-    private const int _whiteColorIndex = (int) Player.White;
-    private const int _blackColorIndex = (int) Player.Black;
+    private const int EmptySquareIndex = (int) Player.Empty;
+    private const int WhiteColorIndex = (int) Player.White;
+    private const int BlackColorIndex = (int) Player.Black;
 
-    private ulong[]? _pieceBitboards;
-    private ulong[]? _colorBitboards;
+    private readonly ulong[] _pieceBitboards = new ulong[Piece.maxIndex];
+    private readonly ulong[] _colorBitboards = new ulong[2];
     public event Action<int, Player>? OnPawnPromotion;
 
     public void Init(string fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq c6 0 2")
     {
-        BoardState = GameStates.Normal;
-        _pieceBitboards = new ulong[typeof(Piece.Pieces).GetEnumValues().Cast<int>().Max()];
-        _colorBitboards = new ulong[2];
         if (BitBoardHelper.HasNonEmptyBitboard(_pieceBitboards)) Array.Clear(_pieceBitboards);
 
         string[] fenParts = fen.Split(' ');
@@ -73,8 +70,6 @@ public class Board
 
     public IEnumerable<SquareInfo> GetOccupiedSquares()
     {
-        int maxPieceIndex = Enum.GetValues(typeof(Piece.Pieces)).Cast<int>().Max();
-
         for (var square = 0; square < 64; square++)
         {
             var pieceSymbol = GetPieceSymbolAtSquare(square);
@@ -82,7 +77,7 @@ public class Board
             ulong mask = 1UL << square;
             var isOccupied = false;
             for (var pieceIndex = 0;
-                 pieceIndex < maxPieceIndex;
+                 pieceIndex < Piece.maxIndex;
                  pieceIndex++)
                 if ((_pieceBitboards[pieceIndex] & mask) != 0)
                 {
@@ -109,8 +104,7 @@ public class Board
 
                 bool isWhite = char.IsUpper(character);
                 int pieceIndex = Piece.GetPieceIndex(character);
-                int pieceColor = isWhite ? 0 : 1;
-                Console.WriteLine("Piece index: " + pieceIndex);
+                int pieceColor = isWhite ? WhiteColorIndex : BlackColorIndex;
                 int squareIndex = rank * 8 + file;
                 BitBoardHelper.SetSquare(ref _pieceBitboards[pieceIndex], squareIndex);
                 BitBoardHelper.SetSquare(ref _colorBitboards[pieceColor], squareIndex);
@@ -119,14 +113,37 @@ public class Board
         }
     }
 
-    public void MakeMove(Move move, Player color)
+    public void UnmakeMove()
     {
-        if (move.StartSquare < 0 || move.StartSquare > 63 || move.TargetSquare < 0 || move.TargetSquare > 63)
+        bool canPop = MoveHistory.TryPop(out var lastMove);
+        Console.WriteLine(MoveHistory.Count);
+        if (!canPop) return;
+        var move = new Move(lastMove.Move.TargetSquare, lastMove.Move.StartSquare);
+
+        ExecuteMove(move, lastMove.Color);
+
+        if (lastMove.CapturedPiece is not {PieceIndex: 0})
         {
-            Console.WriteLine("Invalid move");
-            return;
+            if (lastMove.CapturedPiece != null)
+            {
+                int targetPieceIndex = lastMove.CapturedPiece.Value.PieceIndex;
+                int targetPieceColor = lastMove.CapturedPiece.Value.PieceColor;
+
+                Console.WriteLine($"{lastMove.CapturedPiece.Value.SquareIndex},{targetPieceColor}, {targetPieceIndex}");
+
+                BitBoardHelper.SetSquare(ref _colorBitboards[targetPieceColor],
+                    lastMove.CapturedPiece.Value.SquareIndex);
+                BitBoardHelper.SetSquare(
+                    ref _pieceBitboards[targetPieceIndex],
+                    lastMove.CapturedPiece.Value.SquareIndex);
+            }
         }
 
+        CanMove = lastMove.Color;
+    }
+
+    public void MakeMove(Move move, Player color)
+    {
         if (color != CanMove)
         {
             Console.WriteLine("Not this player's turn");
@@ -142,25 +159,7 @@ public class Board
             return;
         }
 
-        // Execute the move
-        ExecuteMove(move, color);
-
-        // Check if the king is still in check after the move
-        if (IsInCheck(color))
-        {
-            BoardState = GameStates.Checkmate;
-            // Revert to the original state if the king is in check
-            return;
-        }
-
-        // Player opponentColor = CanMove == Player.White ? Player.Black : Player.White;
-        // if (IsCheckmate(opponentColor))
-        // {
-            // BoardState = GameStates.Checkmate;
-        // }
-
-        // Add the move to history
-        MoveHistory.Add(new MoveHistory(move, color));
+        MoveHistory.Push(ExecuteMove(move, color));
 
         // Switch turns
         CanMove = CanMove == Player.White ? Player.Black : Player.White;
@@ -168,33 +167,21 @@ public class Board
         Console.WriteLine($"This player can now move: {CanMove}");
     }
 
-    public void UnMakeMove(Move move, Player color)
-    {
-        if (MoveHistory.Count == 0)
-        {
-            Console.WriteLine("No moves to undo");
-            return;
-        }
-        
-        // Get the last move from the history
-        var lastMove = MoveHistory.Last().Move;
-        
-        if (lastMove != move)
-        {
-            Console.WriteLine("Invalid move to undo");
-            return;
-        }
-        
-    }
-
-    public void ExecuteMove(Move move, Player color)
+    private MoveHistory ExecuteMove(Move move, Player color)
     {
         // Get bitboard indices for the piece at start and target squares
         int startSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
         int targetSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
 
+        var moveData = new MoveHistory
+        {
+            Move = move,
+            Color = color,
+            CapturedPiece = null
+        };
+
         // Also get the color index for the current player (0 for white, 1 for black)
-        int colorIndex = color == Player.White ? _whiteColorIndex : _blackColorIndex;
+        int colorIndex = color == Player.White ? WhiteColorIndex : BlackColorIndex;
 
         // Handle pawn promotion
         if (BoardHelper.IsPromotion(move.TargetSquare, color) &&
@@ -204,19 +191,36 @@ public class Board
         }
 
         // If a piece exists at the target square (i.e., a capture), handle the capture
-        if (targetSquarePieceIndex != -1)
+        if (targetSquarePieceIndex != EmptySquareIndex)
         {
+            int targetColorIndex =
+                GetColorAtSquare(move.TargetSquare) == Player.White ? WhiteColorIndex : BlackColorIndex;
+
+            moveData.CapturedPiece = new PieceInfo(move.TargetSquare, targetSquarePieceIndex, targetColorIndex);
+
             // Clear the target piece from its bitboard (piece type)
             BitBoardHelper.ClearSquare(ref _pieceBitboards[targetSquarePieceIndex], move.TargetSquare);
-
-            // Get the color of the captured piece (before clearing)
-            Player targetSquareColor = GetColorAtSquare(move.TargetSquare);
-
             // Clear the color bitboard for the captured piece's color
-            int targetColorIndex = targetSquareColor == Player.White ? _blackColorIndex : _whiteColorIndex;
             BitBoardHelper.ClearSquare(ref _colorBitboards[targetColorIndex], move.TargetSquare);
         }
 
+        // Handle en passant capture before moving the piece
+        var boardState = new BoardState(this);
+        bool isMovingPawn = char.ToLower(GetPieceSymbolAtSquare(move.StartSquare)) == 'p';
+        if (boardState.IsEnPassant(move) && isMovingPawn)
+        {
+            int direction = color == Player.White ? 8 : -8;
+            int capturedPawnSquare = move.TargetSquare + direction;
+
+            int capturedPawnPieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare));
+            int capturedPawnColorIndex =
+                GetColorAtSquare(capturedPawnSquare) == Player.White ? WhiteColorIndex : BlackColorIndex;
+
+            moveData.CapturedPiece = new PieceInfo(capturedPawnSquare, capturedPawnPieceIndex, capturedPawnColorIndex);
+
+            BitBoardHelper.ClearSquare(ref _pieceBitboards[capturedPawnPieceIndex], capturedPawnSquare);
+            BitBoardHelper.ClearSquare(ref _colorBitboards[capturedPawnColorIndex], capturedPawnSquare);
+        }
 
         // Toggle the start square for the piece's type and move it to the target square
         BitBoardHelper.ToggleSquares(ref _pieceBitboards[startSquarePieceIndex], move.StartSquare, move.TargetSquare);
@@ -224,83 +228,7 @@ public class Board
         // Update the color bitboard: move the color of the piece from start to target square
         BitBoardHelper.ToggleSquares(ref _colorBitboards[colorIndex], move.StartSquare, move.TargetSquare);
 
-        // Handle en passant capture
-        var boardState = new BoardState(this);
-        if (boardState.IsEnPassant(move) && char.ToLower(GetPieceSymbolAtSquare(move.TargetSquare)) == 'p')
-        {
-            int direction = color == Player.White ? 8 : -8;
-            int capturedPawnSquare = move.TargetSquare + direction;
-
-            Console.WriteLine($"Pawn square that needs to be deleted: {capturedPawnSquare}");
-            Console.WriteLine($"Piece on square {capturedPawnSquare}: {GetPieceSymbolAtSquare(capturedPawnSquare)}");
-
-            // Remove the captured pawn from the opponent's bitboard
-            int capturedPawnPieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(capturedPawnSquare));
-            BitBoardHelper.ClearSquare(ref _pieceBitboards[capturedPawnPieceIndex], capturedPawnSquare);
-
-            // Also clear the color bitboard for the captured pawn
-            int capturedPawnColorIndex = GetColorAtSquare(capturedPawnSquare) == Player.White ? 0 : 1;
-            BitBoardHelper.ClearSquare(ref _colorBitboards[capturedPawnColorIndex], capturedPawnSquare);
-        }
-    }
-
-    public bool IsCheckmate(Player kingColor)
-    {
-        // First, check if the king is in check. If not, it's not checkmate.
-        if (!IsInCheck(kingColor)) return false;
-
-        // Initialize move generator
-        var moveGen = new MoveGen();
-
-        // Generate all legal moves for the kingColor player
-        var allLegalMoves = moveGen.GenerateAllLegalMoves(this, kingColor);
-
-        // Simulate each move to see if it gets the king out of check
-        foreach (var move in allLegalMoves)
-        {
-            // Create a deep copy of the board
-            Board boardCopy = Clone();
-            boardCopy.MakeMove(move, kingColor);
-
-            // If the move results in the king no longer being in check, it's not checkmate
-            if (!boardCopy.IsInCheck(kingColor))
-            {
-                return false; // King can escape, not checkmate
-            }
-            
-            // If the move results in the king still being in check, add the attack square to the list
-        }
-        return true;
-    }
-
-
-    public bool IsInCheck(Player kingColor)
-    {
-        // Get the king's position
-        char kingSymbol = kingColor == Player.White ? 'K' : 'k';
-        int kingSquare = GetOccupiedSquares()
-            .First(square => GetPieceSymbolAtSquare(square.Square) == kingSymbol)
-            .Square;
-
-        // Get opponent's color
-        Player opponentColor = kingColor == Player.White ? Player.Black : Player.White;
-
-        // Check if any of the opponent's pieces can attack the king
-        var moveGen = new MoveGen();
-
-        // Generate all moves for the opponent's pieces
-        var allLegalMoves = moveGen.GenerateAllLegalMoves(this, opponentColor);
-
-        // Check if any of the opponent's moves target the king's square
-        foreach (var move in allLegalMoves)
-        {
-            if (move.TargetSquare == kingSquare)
-            {
-                return true; // King is in check
-            }
-        }
-
-        return false; // King is not in check
+        return moveData;
     }
 
     public void PromotePawn(int squareIndex, char pieceSymbol)
@@ -338,22 +266,8 @@ public class Board
         return char.IsUpper(pieceSymbol) ? Player.White : Player.Black;
     }
 
-    public Board Clone()
+    public ulong GetColorBitboard(Player color)
     {
-        // Step 1: Create a new instance of the Board
-        Board clone = new Board();
-
-        clone.CanMove = CanMove;
-        clone.LastAddedFen = LastAddedFen;
-        clone._pieceBitboards = (ulong[]) _pieceBitboards.Clone();
-        clone._colorBitboards = (ulong[]) _colorBitboards.Clone();
-        clone.MoveHistory = new List<MoveHistory>(MoveHistory.Count);
-        foreach (var move in MoveHistory)
-        {
-            clone.MoveHistory.Add(move); // Assuming MoveHistoryItem has a Clone() method
-        }
-
-        // Step 4: Return the clone
-        return clone;
+        return _colorBitboards[(int)color];
     }
 }

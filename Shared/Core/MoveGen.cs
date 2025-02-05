@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Immutable;
+using ChessEngine.Core.Attacks;
 using ChessEngine.Extensions;
 using ChessEngine.Structs;
 using ChessEngine.Utils;
@@ -7,28 +9,14 @@ namespace ChessEngine.Core;
 
 public class MoveGen
 {
-    public readonly List<PieceInfo> FriendlyPieces = [];
-
-    public readonly List<PieceInfo> EnemyPieces = [];
-
     private Player _color;
 
     private PieceInfo _selectedPiece;
 
-    public IList<Move> GenerateAllLegalMoves(Board board, Player color)
+    public IReadOnlyList<Move> GenerateAllLegalMoves(Board board, Player color)
     {
-        IList<Move> moves = [];
+        List<Move> moves = [];
         _color = color;
-
-        Console.WriteLine(board.BoardState);
-        
-        if (board.BoardState == GameStates.Checkmate)
-        {
-            Console.WriteLine("No moves available, in check");
-            return moves;
-        }
-
-        
 
         foreach (SquareInfo info in board.GetOccupiedSquares())
         {
@@ -39,12 +27,11 @@ public class MoveGen
 
             if (color != board.GetColorAtSquare(info.Square))
             {
-                EnemyPieces.Add(new PieceInfo(info.Square, pieceIndex));
                 continue;
             }
 
             // Generate moves for current player's pieces
-            _selectedPiece = new PieceInfo(info.Square, pieceIndex);
+            _selectedPiece = new PieceInfo(info.Square, pieceIndex, (int) color);
             switch (_selectedPiece.PieceIndex)
             {
                 case (int) Piece.Type.Pawn:
@@ -60,21 +47,19 @@ public class MoveGen
                     GenerateQueenMoves(ref moves, board);
                     break;
                 case (int) Piece.Type.Knight:
-                    GenerateKnightMoves(ref moves, board);
+                    KnightAttacks.GenerateKnightMoves(ref moves, board, _selectedPiece.SquareIndex, color); 
                     break;
                 case (int) Piece.Type.King:
                     GenerateKingMoves(ref moves, board);
                     break;
             }
-
-            FriendlyPieces.Add(_selectedPiece);
         }
 
         return moves;
     }
 
 
-    private void GenerateKnightMoves(ref IList<Move> moves, Board board)
+    private void GenerateKnightMoves(ref List<Move> moves, Board board)
     {
         // List of knight move offsets (L-shaped moves)
         int[] offsets = [10, 6, 15, 17, -10, -6, -17, -15];
@@ -106,7 +91,7 @@ public class MoveGen
         }
     }
 
-    private void GenerateKingMoves(ref IList<Move> moves, Board board)
+    private void GenerateKingMoves(ref List<Move> moves, Board board)
     {
         int[] offsets = [8, -8, 1, -1, 7, 9, -7, -9];
 
@@ -124,7 +109,7 @@ public class MoveGen
         }
     }
 
-    private void GenerateQueenMoves(ref IList<Move> moves, Board board)
+    private void GenerateQueenMoves(ref List<Move> moves, Board board)
     {
         int[] rankOffsets = [8, -8];
         int[] diagonalOffsets = [7, 9, -7, -9];
@@ -135,9 +120,9 @@ public class MoveGen
             for (int targetSquare = _selectedPiece.SquareIndex;;)
             {
                 targetSquare += rankOffset;
-                
+
                 if (targetSquare is < 0 or >= 64) break;
-                
+
                 if (board.GetPieceSymbolAtSquare(targetSquare) == ' ')
                 {
                     moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
@@ -156,7 +141,7 @@ public class MoveGen
             for (int targetSquare = _selectedPiece.SquareIndex; targetSquare is < 64 and >= 0;)
             {
                 targetSquare += diagonalOffset;
-                
+
                 if (targetSquare is < 0 or >= 64) break;
                 int targetFilePos = BoardHelper.GetFilePosition(targetSquare);
                 int targetRankPos = BoardHelper.GetRankPosition(targetSquare);
@@ -186,7 +171,7 @@ public class MoveGen
             {
                 int difference = targetPos - filePos;
                 int targetSquare = _selectedPiece.SquareIndex + difference;
-                
+
                 if (targetSquare is < 0 or >= 64) continue;
 
                 if (board.GetPieceSymbolAtSquare(targetSquare) == ' ')
@@ -202,7 +187,7 @@ public class MoveGen
         }
     }
 
-    private void GenerateRookMoves(ref IList<Move> moves, Board board)
+    private void GenerateRookMoves(ref List<Move> moves, Board board)
     {
         int[] rankOffsets = [8, -8];
         int[] fileOffsets = [1, -1];
@@ -212,11 +197,30 @@ public class MoveGen
             int filePos = BoardHelper.GetFilePosition(_selectedPiece.SquareIndex);
 
             for (int targetPos = filePos + fileOffset;
-                 targetPos < 8 && targetPos >= 0;
+                 targetPos is < 8 and >= 0;
                  targetPos += fileOffset)
             {
                 int difference = targetPos - filePos;
                 int targetSquare = _selectedPiece.SquareIndex + difference;
+
+                if (targetSquare is < 0 or >= 64) continue;
+
+                if (board.GetPieceSymbolAtSquare(targetSquare) == ' ')
+                {
+                    moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
+                    continue;
+                }
+
+                if (board.GetColorAtSquare(targetSquare) == _color) break;
+                moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
+                break;
+            }
+        }
+        
+        foreach (int rankOffset in rankOffsets)
+            for (int targetSquare = _selectedPiece.SquareIndex;;)
+            {
+                targetSquare += rankOffset;
 
                 if (targetSquare is < 0 or >= 64) break;
 
@@ -230,27 +234,12 @@ public class MoveGen
                 moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
                 break;
             }
-        }
-        foreach (int rankOffset in rankOffsets)
-        {
-            int targetSquare = _selectedPiece.SquareIndex;
-            targetSquare += rankOffset;
-            
-            if (targetSquare is < 0 or >= 64) continue;
-            
-            if (board.GetPieceSymbolAtSquare(targetSquare) == ' ')
-            {
-                moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
-                continue;
-            }
+        
+        
 
-            if (board.GetColorAtSquare(targetSquare) == _color) break;
-            moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
-            break;
-        }
     }
 
-    private void GenerateBishopMoves(ref IList<Move> moves, Board board)
+    private void GenerateBishopMoves(ref List<Move> moves, Board board)
     {
         int[] offsets = [7, -7, 9, -9];
 
@@ -280,7 +269,7 @@ public class MoveGen
         }
     }
 
-    private void GeneratePawnMoves(ref IList<Move> moves, Board board)
+    private void GeneratePawnMoves(ref List<Move> moves, Board board)
     {
         int direction = _color == Player.White ? -8 : 8;
         int startRank = _color == Player.White ? 6 : 1;
@@ -306,22 +295,20 @@ public class MoveGen
                 moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
             }
 
-            var lastMove = board.MoveHistory.LastOrDefault();
+            bool lastMove = board.MoveHistory.TryPeek(out var result);
+
+            if (!lastMove) return;
 
             // Check if the last move was a pawn moving two squares forward
-            if (Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) == 16)
+            if (Math.Abs(result.Move.StartSquare - result.Move.TargetSquare) != 16) continue;
+            // Check if the last move's target is directly adjacent to the current pawn
+            if (_selectedPiece.SquareIndex + 1 != result.Move.TargetSquare &&
+                _selectedPiece.SquareIndex - 1 != result.Move.TargetSquare) continue;
+            // Ensure the current pawn is capturing diagonally to an empty square
+            if (board.GetPieceSymbolAtSquare(targetSquare) == ' ' &&
+                result.Move.TargetSquare + direction == targetSquare)
             {
-                // Check if the last move's target is directly adjacent to the current pawn
-                if (_selectedPiece.SquareIndex + 1 == lastMove.Move.TargetSquare ||
-                    _selectedPiece.SquareIndex - 1 == lastMove.Move.TargetSquare)
-                {
-                    // Ensure the current pawn is capturing diagonally to an empty square
-                    if (board.GetPieceSymbolAtSquare(targetSquare) == ' ' &&
-                        lastMove.Move.TargetSquare + direction == targetSquare)
-                    {
-                        moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare)); // Add en passant move
-                    }
-                }
+                moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare)); // Add en passant move
             }
         }
     }

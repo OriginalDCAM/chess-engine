@@ -13,14 +13,36 @@ public class BoardState
     
     public bool IsEnPassant(Move move)
     {
-        var lastMove = Board.MoveHistory.LastOrDefault();
-        if (Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) != 16)
+        char movingPiece = Board.GetPieceSymbolAtSquare(move.StartSquare);
+        if (char.ToLower(movingPiece) != 'p')
             return false;
 
-        // Ensure the last move was a pawn move and check for the diagonal capture
-        int direction = Board.GetPieceSymbolAtSquare(move.TargetSquare) == 'P' ? -8 : 8;
-        return Math.Abs(move.StartSquare - move.TargetSquare) == 9 ||
-               (Math.Abs(move.StartSquare - move.TargetSquare) == 7 &&
-                Board.GetPieceSymbolAtSquare(move.TargetSquare - direction) != ' ');
+        if (!Board.MoveHistory.TryPeek(out var lastMove))
+            return false;
+        
+        char lastMovePiece = Board.GetPieceSymbolAtSquare(lastMove.Move.TargetSquare);
+        if (char.ToLower(lastMovePiece) != 'p')
+            return false;
+
+        bool wasDoublePawnPush = Math.Abs(lastMove.Move.StartSquare - lastMove.Move.TargetSquare) == 16;
+        if (!wasDoublePawnPush)
+            return false;
+
+        int correctRank = movingPiece == 'P' ? 3 : 4;  // Rank 5 for white, rank 4 for black
+        if (move.StartSquare / 8 != correctRank)
+            return false;
+
+        int captureSquare = movingPiece == 'P' ? 
+            lastMove.Move.TargetSquare - 8 :  // White captures up
+            lastMove.Move.TargetSquare + 8;   // Black captures down
+        
+        Console.WriteLine(lastMove.Move.TargetSquare);
+
+        bool isDiagonalCapture = Math.Abs(move.StartSquare - move.TargetSquare) == 7 || 
+                                 Math.Abs(move.StartSquare - move.TargetSquare) == 9;
+        
+        Console.WriteLine(isDiagonalCapture);
+    
+        return isDiagonalCapture && move.TargetSquare == captureSquare;
     }
 }

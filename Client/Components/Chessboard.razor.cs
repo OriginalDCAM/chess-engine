@@ -1,6 +1,7 @@
 ﻿using ChessEngine;
 using ChessEngine.Core;
 using ChessEngine.Structs;
+using ChessEngine.Utils;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -19,10 +20,10 @@ public partial class Chessboard : ComponentBase
 
     protected override void OnInitialized()
     {
-        Board.OnPawnPromotion += HandlePawnPromotion;
+        Board.OnPawnPromotion += async (i, player) => await HandlePawnPromotion(i, player);
     }
 
-    private async void HandlePawnPromotion(int squareIndex, Player player)
+    private async Task HandlePawnPromotion(int squareIndex, Player player)
     {
         promotionPending = true;
         promotionSquare = squareIndex;
@@ -38,7 +39,7 @@ public partial class Chessboard : ComponentBase
     {
         if (Board.CanMove != Board.GetColorAtSquare(square) && _selectedSquare == -1) return;
 
-        if (_selectedSquare == -1) // No piece selected, select this one
+        if (_selectedSquare == (int)Player.Empty) // No piece selected, select this one
         {
             if (Board.GetPieceSymbolAtSquare(square) != ' ')
             {

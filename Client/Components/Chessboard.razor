@@ -1,8 +1,6 @@
 ﻿@using ChessEngine
-@using ChessEngine.Structs
 @using ChessEngine.Utils
 @using ChessWebUI.Components.Addons
-@using Piece = ChessWebUI.Components.ChessPieces.Piece
 @using ChessWebUI.Components.ChessPieces
 @inject IDialogService DialogService
 
@@ -46,10 +44,10 @@
             }
         }
     </div>
+    <MudButton @onclick="() => Board.UnmakeMove()">Undo Moves</MudButton>
 </MudItem>
 
 @code {
-
     private async Task OpenDialogAsync(int square, Player player)
     {
         var options = new DialogOptions {CloseOnEscapeKey = true, MaxWidth = MaxWidth.ExtraSmall};
@@ -59,18 +57,17 @@
             {Player => player, player}
         };
 
-        var dialog = await DialogService.ShowAsync<PromotionDialog>("Simple Dialog", parameters, options);
+        var dialog = await DialogService.ShowAsync<PromotionDialog>("Promotion Dialog", parameters, options);
 
         var result = await dialog.Result;
 
-        if (!result.Canceled)
+        if (result?.Data == null || !char.TryParse(result.Data.ToString(), out char piece))
         {
-            char.TryParse(result.Data.ToString(), out char piece);
-            Board.PromotePawn(square, piece);
+            Board.PromotePawn(square, player == Player.White ? 'Q' : 'q');
         }
         else
         {
-            Board.PromotePawn(square, player == Player.White ? 'Q' : 'q');
+            Board.PromotePawn(square, piece);
         }
     }
 

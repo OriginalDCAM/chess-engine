@@ -36,6 +36,8 @@ public static class Piece
         BlackKing = Type.King | Color.Black
     }
 
+    public static int maxIndex = typeof(Pieces).GetEnumValues().Cast<int>().Max();
+
     public static readonly int[] PieceIndices =
     [
         (int) Pieces.WhitePawn,

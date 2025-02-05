@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace ChessEngine.Utils;
 
 public static class BitBoardHelper
@@ -31,6 +33,13 @@ public static class BitBoardHelper
     public static bool ContainsSquare(ulong bitboard, int squareIndex)
     {
         return (bitboard & (1UL << squareIndex)) != 0; // Return true if the bit at squareIndex is 1
+    }
+
+    public static int GetLSBIndex(ulong bitboard)
+    {
+        if (bitboard == 0) return -1;
+
+        return BitOperations.TrailingZeroCount(bitboard);
     }
 
 
