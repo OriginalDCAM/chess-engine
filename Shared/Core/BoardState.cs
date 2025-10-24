@@ -28,7 +28,7 @@ public class BoardState
         if (!wasDoublePawnPush)
             return false;
 
-        int correctRank = movingPiece == 'P' ? 3 : 4;  // Rank 5 for white, rank 4 for black
+        int correctRank = movingPiece == 'P' ? 3 : 4;  // Rank 4 for black, rank 5 for white
         if (move.StartSquare / 8 != correctRank)
             return false;
 
