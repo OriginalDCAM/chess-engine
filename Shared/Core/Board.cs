@@ -8,9 +8,9 @@ namespace ChessEngine.Core;
 /// </summary>
 public class Board
 {
-    private HashSet<string?> _fenList = [];
+    private HashSet<string> _fenList = [];
 
-    public HashSet<string?> FenList
+    public HashSet<string> FenList
     {
         get => _fenList;
         set
