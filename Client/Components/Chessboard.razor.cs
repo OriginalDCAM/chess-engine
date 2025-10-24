@@ -10,13 +10,14 @@ namespace ChessWebUI.Components;
 public partial class Chessboard : ComponentBase
 {
     [Parameter] public required Board Board { get; set; }
-
-    private List<int>? VisualizeAttackList { get; set; } = [];
+    private List<int>? VisualizeAttackList { get; } = [];
 
     private int _selectedSquare = -1; // Track selected square
 
     protected bool promotionPending = false;
     private int promotionSquare;
+
+    private const char EMPTY_SQUARE_SYMBOL = ' ';
 
     protected override void OnInitialized()
     {
@@ -41,7 +42,7 @@ public partial class Chessboard : ComponentBase
 
         if (_selectedSquare == (int)Player.Empty) // No piece selected, select this one
         {
-            if (Board.GetPieceSymbolAtSquare(square) != ' ')
+            if (Board.GetPieceSymbolAtSquare(square) != EMPTY_SQUARE_SYMBOL)
             {
                 _selectedSquare = square;
                 var color = Board.GetColorAtSquare(_selectedSquare);
