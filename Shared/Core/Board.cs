@@ -119,7 +119,7 @@ public class Board
         Console.WriteLine(MoveHistory.Count);
         if (!canPop) return;
         var move = new Move(lastMove.Move.TargetSquare, lastMove.Move.StartSquare);
-
+        
         ExecuteMove(move, lastMove.Color);
 
         if (lastMove.CapturedPiece is not {PieceIndex: 0})
@@ -169,7 +169,7 @@ public class Board
 
     private MoveHistory ExecuteMove(Move move, Player color)
     {
-        // Get bitboard indices for the piece at start and target squares
+        // Get bitboard indices for the PieceIndex at start and target squares
         int startSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.StartSquare));
         int targetSquarePieceIndex = Piece.GetPieceIndex(GetPieceSymbolAtSquare(move.TargetSquare));
 
@@ -177,6 +177,7 @@ public class Board
         {
             Move = move,
             Color = color,
+            PieceIndex = startSquarePieceIndex,
             CapturedPiece = null
         };
 
@@ -190,7 +191,7 @@ public class Board
             OnPawnPromotion?.Invoke(move.TargetSquare, color);
         }
 
-        // If a piece exists at the target square (i.e., a capture), handle the capture
+        // If a PieceIndex exists at the target square (i.e., a capture), handle the capture
         if (targetSquarePieceIndex != EmptySquareIndex)
         {
             int targetColorIndex =
@@ -198,13 +199,13 @@ public class Board
 
             moveData.CapturedPiece = new PieceInfo(move.TargetSquare, targetSquarePieceIndex, targetColorIndex);
 
-            // Clear the target piece from its bitboard (piece type)
+            // Clear the target PieceIndex from its bitboard (PieceIndex type)
             BitBoardHelper.ClearSquare(ref _pieceBitboards[targetSquarePieceIndex], move.TargetSquare);
-            // Clear the color bitboard for the captured piece's color
+            // Clear the color bitboard for the captured PieceIndex's color
             BitBoardHelper.ClearSquare(ref _colorBitboards[targetColorIndex], move.TargetSquare);
         }
 
-        // Handle en passant capture before moving the piece
+        // Handle en passant capture before moving the PieceIndex
         var boardState = new BoardState(this);
         bool isMovingPawn = char.ToLower(GetPieceSymbolAtSquare(move.StartSquare)) == 'p';
         if (boardState.IsEnPassant(move) && isMovingPawn)
@@ -222,10 +223,10 @@ public class Board
             BitBoardHelper.ClearSquare(ref _colorBitboards[capturedPawnColorIndex], capturedPawnSquare);
         }
 
-        // Toggle the start square for the piece's type and move it to the target square
+        // Toggle the start square for the PieceIndex's type and move it to the target square
         BitBoardHelper.ToggleSquares(ref _pieceBitboards[startSquarePieceIndex], move.StartSquare, move.TargetSquare);
 
-        // Update the color bitboard: move the color of the piece from start to target square
+        // Update the color bitboard: move the color of the PieceIndex from start to target square
         BitBoardHelper.ToggleSquares(ref _colorBitboards[colorIndex], move.StartSquare, move.TargetSquare);
 
         return moveData;
@@ -235,7 +236,7 @@ public class Board
     {
         char pawnPiece = CanMove == Player.White ? 'p' : 'P';
         Console.WriteLine(
-            $"square index: {squareIndex}, pawn piece symbol: {pawnPiece}, promotion piece symbol:{pieceSymbol}");
+            $"square index: {squareIndex}, pawn PieceIndex symbol: {pawnPiece}, promotion PieceIndex symbol:{pieceSymbol}");
         BitBoardHelper.ToggleSquare(ref _pieceBitboards[Piece.GetPieceIndex(pawnPiece)], squareIndex);
         BitBoardHelper.SetSquare(ref _pieceBitboards[Piece.GetPieceIndex(pieceSymbol)], squareIndex);
     }

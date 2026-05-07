@@ -10,7 +10,7 @@ namespace ChessWebUI.Components;
 public partial class Chessboard : ComponentBase
 {
     [Parameter] public required Board Board { get; set; }
-    private List<int>? VisualizeAttackList { get; } = [];
+    private List<int> VisualizeAttackList { get; } = [];
 
     private int _selectedSquare = -1; // Track selected square
 
@@ -40,7 +40,7 @@ public partial class Chessboard : ComponentBase
     {
         if (Board.CanMove != Board.GetColorAtSquare(square) && _selectedSquare == -1) return;
 
-        if (_selectedSquare == (int)Player.Empty) // No piece selected, select this one
+        if (_selectedSquare == (int)Player.Empty) // No PieceIndex selected, select this one
         {
             if (Board.GetPieceSymbolAtSquare(square) != EMPTY_SQUARE_SYMBOL)
             {
@@ -52,18 +52,18 @@ public partial class Chessboard : ComponentBase
                 foreach (var move in moves)
                     if (move.StartSquare == _selectedSquare)
                     {
-                        VisualizeAttackList?.Add(move.TargetSquare);
+                        VisualizeAttackList.Add(move.TargetSquare);
                     }
             }
         }
         else if (_selectedSquare == square)
         {
             _selectedSquare = -1;
-            VisualizeAttackList?.Clear();
+            VisualizeAttackList.Clear();
         }
         else if (_selectedSquare != square && Board.GetColorAtSquare(square) == Board.CanMove)
         {
-            VisualizeAttackList?.Clear();
+            VisualizeAttackList.Clear();
             _selectedSquare = square;
             var color = Board.GetColorAtSquare(_selectedSquare);
             if (Board.CanMove != color) return;
@@ -72,16 +72,16 @@ public partial class Chessboard : ComponentBase
             foreach (var move in moves)
                 if (move.StartSquare == _selectedSquare)
                 {
-                    VisualizeAttackList?.Add(move.TargetSquare);
+                    VisualizeAttackList.Add(move.TargetSquare);
                 }
         }
-        else // Piece already selected, move it
+        else // PieceIndex already selected, move it
         {
             var color = Board.GetColorAtSquare(_selectedSquare);
             var move = new Move(_selectedSquare, square);
             Board.MakeMove(move, color); // Make the move
             _selectedSquare = -1; // Deselect after move
-            VisualizeAttackList?.Clear();
+            VisualizeAttackList.Clear();
         }
         StateHasChanged();
     }

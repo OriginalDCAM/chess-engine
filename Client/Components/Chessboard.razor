@@ -35,7 +35,7 @@
                         <div class="square-attack-overlay"></div>
                     }
 
-                    <!-- Draggable Piece -->
+                    <!-- Draggable PieceIndex -->
                     @if (Board.GetPieceSymbolAtSquare(currentSquare) != ' ')
                     {
                         <Piece PieceType="@(Board.GetPieceSymbolAtSquare(currentSquare))"/>
@@ -54,14 +54,14 @@
 
         var parameters = new DialogParameters<PromotionDialog>
         {
-            {Player => player, player}
+            {x => x.Player, player}
         };
 
         var dialog = await DialogService.ShowAsync<PromotionDialog>("Promotion Dialog", parameters, options);
 
         var result = await dialog.Result;
 
-        if (result?.Data == null || !char.TryParse(result.Data.ToString(), out char piece))
+        if (result?.Data == null || result.Canceled || !char.TryParse(result.Data.ToString(), out char piece))
         {
             Board.PromotePawn(square, player == Player.White ? 'Q' : 'q');
         }

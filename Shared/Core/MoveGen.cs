@@ -64,7 +64,7 @@ public class MoveGen
         // List of knight move offsets (L-shaped moves)
         int[] offsets = [10, 6, 15, 17, -10, -6, -17, -15];
 
-        // Get current piece's row and column
+        // Get current PieceIndex's row and column
         int startSquare = _selectedPiece.SquareIndex;
         int startRank = BoardHelper.GetRankPosition(startSquare);
         int startFile = BoardHelper.GetFilePosition(startSquare);
@@ -85,7 +85,7 @@ public class MoveGen
             int colDiff = Math.Abs(startFile - targetFile);
             if (!((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2))) continue;
 
-            // Check if the target square is occupied by a friendly piece
+            // Check if the target square is occupied by a friendly PieceIndex
             if (board.GetColorAtSquare(targetSquare) == _color) continue;
             moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
         }
@@ -102,7 +102,7 @@ public class MoveGen
             // Check if the move is out of bounds
             if (targetSquare is < 0 or >= 64) continue;
 
-            // Check if the target square is occupied by a friendly piece
+            // Check if the target square is occupied by a friendly PieceIndex
             if (board.GetColorAtSquare(targetSquare) == _color) continue;
 
             moves.Add(new Move(_selectedPiece.SquareIndex, targetSquare));
