@@ -16,7 +16,7 @@
                             </MudText>
                         </MudItem>
                     </MudPaper>
-                    <MudPaper Outlined="PieceSelected is 'R' or 'r'" @onclick="() => { PieceSelected = isWhite ? 'R' : 'r'; }" Placement="Placement.Top" Label="" Style="width: 50%; height: 25%; margin: .2rem;">
+                    <MudPaper Outlined="PieceSelected is 'R' or 'r'" @onclick="() => { PieceSelected =  isWhite ? 'R' : 'r';}" Placement="Placement.Top" Label="" Style="width: 50%; height: 25%; margin: .2rem;">
                         <MudItem Style="display: flex; align-content: center; flex-direction: column;">
                             <Rook IsWhite="isWhite"></Rook>
                             <MudText Typo="Typo.body1" Align="Align.Center">
@@ -54,7 +54,7 @@
 @code {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; }
 
-    public char PieceSelected { get => isWhite ? 'Q' : 'q'; set => PieceSelected = value; }
+    public char PieceSelected { get; set; } = 'q';
 
     [Parameter] public Player Player { get; set; }
 
